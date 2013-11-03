@@ -2,8 +2,7 @@ extends layout
 
 block content 
 	.container 
-		h1 Test Final Project
-		.userInfo
+		.userLogin
 			form.form-inline(role= 'form')
 				.form-group
 					label.sr-only(for='exampleInputEmail2') Enter email
@@ -15,28 +14,33 @@ block content
 					label
 						input(type='checkbox')
 						| Remember me
-				button.btn.btn-default(type='submit') Sign in
+				button.btn.btn-default(type='submit') Login 
+				button.btn.btn-default(type='submit') Sign Up
+				h1 Save Yourself
+		
+
 		.budgetEntry 
-			row.col-md-3.text-center.text-primary Select Category
-				select.form-control.productdropdown 
-			row.col-md-2.text-center.text-primary  Current Spend	
-				input.budget.form-control(name="budget", type = "text", placeholder="Budget")
-			row.col-md-2.text-center.text-primary  % of Income	
-				input.budget.form-control(name="budget", type = "text", placeholder="Budget")
-			row.col-md-5.text-center.text-primary Compare Results
-				div.priceresults
-					row.col-md-4
-						#disabledinput.input.form-control(name="budget", type = "text", placeholder="disabled") Result
-					row.col-md-4
-						#disabledinput.input.form-control(name="budget", type = "text", placeholder="disabled") Result
-					row.col-md-4
-						#disabledinput.input.form-control(name="budget", type = "text", placeholder="disabled") Result
-			row.col-md-2.col-md-offset-3.text-center.text-primary  Goal Budget	
-				input.budget.form-control(name="budget", type = "text", placeholder="Budget")
+			.personalIncome
+				//- row.col-md-3.col-md-offset-2.text-center.text-primary Enter your monthly Income
+				row.col-md-7.col-md-offset-2.text-center.text-primary
+					.input-group.input-group-lg
+							span.input-group-addon Enter your monthly income
+							input.income.form-control(name="budget", type = "text", placeholder="Budget")
+					//- input.budget.form-control(name="budget", type = "text", placeholder="Budget")
+			.category
+				row.col-md-3.col-md-offset-2.text-center.text-primary Select Category
+					select.form-control.productdropdown 
+			.currentSpend
+				row.col-md-2.text-center.text-primary  Current Spend	
+					input.budget.form-control.currentspend(name="budget", type = "text", placeholder="Budget")
+			.percent
+				row.col-md-2.text-center.text-primary  % of Income	
+					input.percentIncome.form-control(name="budget", type = "text", placeholder="Budget")
+			row.col-md-2.col-md-offset-5.text-center.text-primary  Goal Budget	
+				input.goalbudget.form-control(name="budget", type = "text", placeholder="Budget")
 			row.col-md-2.text-center.text-primary  % of Income	
 				input.percentbudget.form-control(name="budget", type = "text", placeholder="Budget")
-			row.col-md-5.text-center.text-primary
-			row.col-md-3.text-center.text-primary  By this date:
-				input.budget.form-control(name="budget", type = "date", placeholder="Budget")
+			row.col-md-3.col-md-offset-2.text-center.text-primary  By this date:
+				input.goaldate.form-control(name="budget", type = "date", placeholder="Budget")
 			row.col-md-2.text-center.text-primary  Saved:
-				input.budget.form-control(name="budget", type = "text", placeholder="Amt Saved")
+				input.goalsave.form-control(name="budget", type = "text", placeholder="Amt Saved")
