@@ -34,21 +34,23 @@ block content
 							a(data-toggle="collapse" data-parent="#accordion" href="#collapseOne") Enter your account info
 					.panel-collapse.collapse.in#collapseOne
 						.panel-body 
-							label HIII
-							select.form-control.creditcard
+							select.col-md-7.form-control.creditcard 
 								.input-group.input-group-md
 									option American Express
 									option Citi
-									option Chase 
-									option Bank of America 
+									option Chase
+									option Bank of America
 									option Key Bank
-							.input-group.input-group-md
+							.input-group.input-group-md.username
 								span.input-group-addon Bank account username:  
-								input.username.form-control(name="username", type = "text", placeholder="Username")
-							.input-group.input-group-md
+								input.bankusername.form-control(name="username", type = "text", placeholder="Username")
+							.input-group.input-group-md.password
 								span.input-group-addon Bank account password:  
-								input.password.form-control(name="password", type = "password", placeholder="Password")	
-
+								input.bankpassword.form-control(name="password", type = "password", placeholder="Password")	
+							.input-group.input-group-md.acctid
+								span.input-group-addon Bank account password:  
+								input.bankacctid.form-control(name="password", type = "password", placeholder="Password")
+							.button.acctsubmit(type='button', class='btn btn-primary') Submit
 
 			//- .button(type="button" class="btn btn-danger" data-toggle="collapse" data-target="#demo") Test Collapse
 			//- .collpase.in#demo Stuff in here
@@ -57,7 +59,7 @@ block content
 				//- row.col-md-3.col-md-offset-2.text-center.text-primary Enter your monthly Income
 				row.col-md-5.col-md-offset-3.text-center.text-primary
 					.input-group.input-group-lg
-							span.input-group-addon Make this go away: 
+							span.input-group-addon Credit Card Debt: 
 							input.yourdebt.form-control(name="debt", type = "text", placeholder="DEBT")
 
 			.category
@@ -88,5 +90,5 @@ block content
 			//- 	input.goalsave.form-control(name="budget", type = "text", placeholder="Amt Saved")
 			row.col-md-3.col-md-offset-2.text-center.text-primary  By this date:
 				input.goaldate.form-control(name="budget", type = "date", placeholder="Budget")
-			row.col-md-3.text-center.text-primary  Your balance will be at most:
+			row.col-md-3.text-center.text-primary  Your balance will be less than:
 				input.goalsave.form-control(name="budget", type = "text", placeholder="Amt Saved")

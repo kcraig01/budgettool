@@ -59,14 +59,38 @@ $(function(){
 					}
 				})
 			});
-	
+	$('.acctsubmit').on('click', function(acctInfo){
+		var acctInfo =[];
+		var bank = $('.creditcard option:selected').text();
+		var username = $('.bankusername').val();
+		var password = $('.bankpassword').val();
+		var acctnum = $('.bankacctid').val();
+		var acctdata = {
+			acct: {
+			bank: bank,
+			username: username,
+			password: password,
+			acctnum: acctnum
+			}
+		}
+		acctInfo.push(acctdata);
+		//Send entered acct info to retrieve debt data
+		$.post('/acctdata', {acctdata: acctdata}, function(acctdata){
+			console.log(acctdata);
+			console.log(acctdata[0].BALAMT)
+			var debt = Math.abs(acctdata[0].BALAMT)
+			$('.yourdebt').val(debt)
+
+		})
+	})
 //receive credit card balance amount and set it as value in DEBT field
 
-	$.get('/debt', function(newDebt){
-		console.log(newDebt[0].BALAMT)
-		var debt = Math.abs(newDebt[0].BALAMT)
-		$('.yourdebt').val(debt)
-	});
+	// $.get('/acctdata', function(newDebt){
+	// 	console.log(newDebt[0][0])
+	// 	console.log(newDebt[0].BALAMT)
+	// 	var debt = Math.abs(newDebt[0].BALAMT)
+	// 	$('.yourdebt').val(debt)
+	// })
 
 //set payoff options from info in database 
 	$.get('/payoff', function(payoff){
@@ -87,6 +111,7 @@ $(function(){
 	//update payoff percent if option selected changes
 	$('.payoffdropdown').on('change', function(){
 		var name = $('.payoffdropdown').val();
+		//send selected payoff type to server to retrieve matching percentage
 			$.post('/percent', {name: name}, function(percent){
 				console.log(percent.payoffpercent)
 				$('.percentdebt').val(percent.payoffpercent)
@@ -96,7 +121,8 @@ $(function(){
 				$('.payoffgoal').val(goalBudget)
 				var debt = $('.yourdebt').val()
 				var newBalance = (debt)-(goalBudget)
-				$('.goalsave').val(newBalance)
+				var roundedBalance = Math.round(newBalance * 100) / 100
+				$('.goalsave').val(roundedBalance)
 	})
 		});
 	$('.income').on('keyup', function(e){
@@ -116,4 +142,5 @@ $(function(){
 						
 					}
 				})
+
 });

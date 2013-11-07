@@ -104,7 +104,7 @@ payoff3.save();
 payoff4.save();
 
 var Bank= mongoose.model('Bank',{
-	bank: String,
+	name: String,
 	fid: Number, 
 	fidorg: String,
 	url: String 
@@ -139,6 +139,8 @@ var bank5 = new Bank({
 	fidorg: 'B1',
 	url: 'https://ofx.chase.com'
 });
+
+
 bank1.save();
 bank2.save();
 bank3.save();
@@ -186,21 +188,7 @@ var bankInfo = {
 };
 
 //If second param is omitted JSON will be returned by default
-var debtBalance =[]
-banking.getStatement(bankInfo,function(res, err){
-    if(err) console.log(err)
-    console.log(res.OFX.CREDITCARDMSGSRSV1.CCSTMTTRNRS.CCSTMTRS.LEDGERBAL)
-	var cardBalance = res.OFX.CREDITCARDMSGSRSV1.CCSTMTTRNRS.CCSTMTRS.LEDGERBAL
-	debtBalance.push(cardBalance);
-	return debtBalance
-});
 
-//send credit card balance info to client 
-app.get('/debt', function(req, res){
-	var newDebt = debtBalance
-	console.log(newDebt)
-	res.send(newDebt)
-})
 
 app.post('/percent', function (req, res){
 	PayOff.findOne({name: req.body.name}, function(err, payoffPercent){
@@ -214,41 +202,55 @@ app.post('/percent', function (req, res){
 	})
 });
 	
+app.post('/acctdata', function (req, response){
+	console.log(req.body.acctdata.acct.bank)
+	var userData = req.body.acctdata.acct
+	Bank.findOne({name: req.body.acctdata.acct.bank}, function (err, bank){
+		if (err){
+			console.log(err);
+		}
+		else{
+			var fetchstatement ={
+				fullbankdata:{
+					fid:bank.fid,
+					fidorg: bank.fidorg,
+					url: bank.url,
+					bankid: null,
+					user: userData.username,
+					pass: userData.password,
+					accid: userData.acctnum,
+					acctype: 'CREDITCARD',
+					date_start: 20130930, /* Statement start date YYYYMMDDHHMMSS */
+  					date_end: 20131021 /* Statement end date YYYYMMDDHHMMSS */
+				}
+			}
+				console.log(fetchstatement.fullbankdata)
+				var debtBalance =[]
+				banking.getStatement(fetchstatement.fullbankdata,function(res, err){
+				    if(err) console.log(err)
+				    console.log(res.OFX.CREDITCARDMSGSRSV1.CCSTMTTRNRS.CCSTMTRS.LEDGERBAL)
+					var cardBalance = res.OFX.CREDITCARDMSGSRSV1.CCSTMTTRNRS.CCSTMTRS.LEDGERBAL
+					debtBalance.push(cardBalance);
+					response.send(debtBalance)
+					// 	app.get('/debtbalance', function(req, res){
+					// 	console.log('here')
+					// 	var newDebt = debtBalance
+					// 	console.log(newDebt)
+					// 	res.send(newDebt)
+					// })
+				});
+					
+		}
+	})
+})
 
 
-// request.post('http://lesserthan.com/api.getDealsZip/', {zip: 10021, format: 'json'}, function(err, res, body){
-// 	console.log(res)
-// });
-
-  // console.log(res.OFX.CREDITCARDMSGSRSV1.CCSTMTTRNRS)//This works for citi to get available balance in object 
-
-// var returnedStatement = res; 
-// 	var statementObject = JSON.parse(res);
-// 	console.log(statementObject)
-// 	return returnedStatement
-
-
-// banking.parseOfxFile('/myfile.ofx', function (res, err) {
-//   if(err) done(err)
-//   console.log(res);
-// });
-
-
-// var server = http.createServer(app);
-// var socketServer = io.listen(server);
-
-// var users = {}
-
-// socketServer.sockets.on('connection', function(socket) { 
-//     console.log('SOMEONE CONNECTED!')
-//     users[socket.id] = socket.id
-//     // socket.emit('message', 'HI!')
-
-//     socket.on('message', function(message){
-//         socket.broadcast.emit('message', message)
-//     });
-// });
-
+//send credit card balance info to client 
+// app.get('/debt', function(req, res){
+// 	var newDebt = debtBalance
+// 	console.log(newDebt)
+// 	res.send(newDebt)
+// })
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
