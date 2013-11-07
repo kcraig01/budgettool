@@ -19,9 +19,10 @@ $(function(){
 			console.log(dropDown)
 			$('.productdropdown').append('<option>'+dropDown+'</option>');
 			// $('.percentbudget').val(budget);
-		}
+			}
 				//when category selected from dropdown, find the matching budget % from array
 				//and update value field
+				//get rid of this and use findOne formula - make puuuureeeee
 				$('.productdropdown').on('change', function(){
 					var selectedCategory = $('.productdropdown option:selected').text();
 				 	console.log(selectedCategory);
@@ -57,16 +58,62 @@ $(function(){
 						
 					}
 				})
+			});
+	
+//receive credit card balance amount and set it as value in DEBT field
 
-	// 				$('#message-input').on('keyup', function(e){
-	// 	$el = $(this);
-	// 	if(e.which === 13){
-	// 		console.log('test')
-	// 		socket.emit('message', $el.val())
-	// 		$el.val('')
-	// 	}
-	// })
-
+	$.get('/debt', function(newDebt){
+		console.log(newDebt[0].BALAMT)
+		var debt = Math.abs(newDebt[0].BALAMT)
+		$('.yourdebt').val(debt)
 	});
 
+//set payoff options from info in database 
+	$.get('/payoff', function(payoff){
+		console.log(payoff)
+			for (var items in payoff){
+				var dropDown = payoff[items].name;
+				var budget = payoff[items].payoffpercent;
+				console.log(dropDown)
+				$('.payoffdropdown').append('<option>'+dropDown+'</option>');
+			}
+			//populate payoff percent immediately for default selection in payoff dropdown	
+			var name = $('.payoffdropdown').val();
+			$.post('/percent', {name: name}, function(percent){
+				console.log(percent.payoffpercent)
+				$('.percentdebt').val(percent.payoffpercent)
+			})
+	});
+	//update payoff percent if option selected changes
+	$('.payoffdropdown').on('change', function(){
+		var name = $('.payoffdropdown').val();
+			$.post('/percent', {name: name}, function(percent){
+				console.log(percent.payoffpercent)
+				$('.percentdebt').val(percent.payoffpercent)
+				var currentIncome = $('.income').val()
+				var percentGoal = ($('.percentdebt').val()/100);
+				var goalBudget = percentGoal*currentIncome
+				$('.payoffgoal').val(goalBudget)
+				var debt = $('.yourdebt').val()
+				var newBalance = (debt)-(goalBudget)
+				$('.goalsave').val(newBalance)
+	})
+		});
+	$('.income').on('keyup', function(e){
+					$el = $(this);
+					if(e.which ===13){
+						var currentIncome = $el.val()
+						console.log(currentIncome)
+						var percentGoal = ($('.percentdebt').val()/100);
+						console.log(percentGoal)
+						var goalBudget = percentGoal*currentIncome
+						console.log('goal:',goalBudget)
+						$('.payoffgoal').val(goalBudget)
+						var debt = $('.yourdebt').val()
+						console.log('debt:',debt)
+						var newBalance = (debt)-(goalBudget)
+						$('.goalsave').val(newBalance)
+						
+					}
+				})
 });

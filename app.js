@@ -65,29 +65,96 @@ var category5 = new Category({
 	name: "Transport",
 	percentbudget: 5
 });
+var category6 = new Category({
+	name: "Debt",
+	percentbudget: 15
+});
+
 
 category1.save();
 category2.save();
 category3.save();
 category4.save();
 category5.save();
+category6.save();
+
+var PayOff = mongoose.model('PayOff',{
+	name: String,
+	payoffpercent: Number
+});
+var payoff1 = new PayOff({
+	name: "Just a little bit",
+	payoffpercent: 5
+});
+var payoff2 = new PayOff({
+	name: "More than a little",
+	payoffpercent:10
+});
+var payoff3 = new PayOff({
+	name: "Want this debt gone asap",
+	payoffpercent: 15
+});
+var payoff4 = new PayOff({
+	name: "Overachiever",
+	payoffpercent: 20
+});
+payoff1.save();
+payoff2.save();
+payoff3.save();
+payoff4.save();
+
+var Bank= mongoose.model('Bank',{
+	bank: String,
+	fid: Number, 
+	fidorg: String,
+	url: String 
+});
+var bank1 = new Bank({
+	name: 'Key Bank',
+	fid: 5901,
+	fidorg: 'KeyBank',
+	url: 'https://www.oasis.cfree.com/fip/genesis/prod/05901.ofx'
+});
+var bank2 = new Bank({
+	name: 'Bank of America',
+	fid: 5959,
+	fidorg: 'HAN',
+	url: 'https://ofx.bankofamerica.com/cgi-forte/fortecgi?servicename=ofx_2-3&pagename=ofx'
+});
+var bank3 = new Bank({
+	name: 'American Express',
+	fid: 3101,
+	fidorg: 'AMEX',
+	url: 'https://online.americanexpress.com/myca/ofxdl/desktop/desktopDownload.do?request_type=nl_ofxdownload'
+});
+var bank4 = new Bank({
+	name: 'Citi',
+	fid: 24909,
+	fidorg: 'Citigroup',
+	url: 'https://www.accountonline.com/cards/svc/CitiOfxManager.do'
+});
+var bank5 = new Bank({
+	name: 'Chase',
+	fid: 10898,
+	fidorg: 'B1',
+	url: 'https://ofx.chase.com'
+});
+bank1.save();
+bank2.save();
+bank3.save();
+bank4.save();
+bank5.save();
 
 
-// var productTemplate = {
-// 	"products": {
-// 		"product1" : "$15.00",
-// 		"product2" : "$7.00"
-// 	},
-// };
 
 app.get('/', function(req, res){
         res.render('index')
 });
-var categoryList = {};
+
 app.get('/load', function(req, res){
 
 	Category.find({}, function (err,data){
-		console.log(data)
+
 		res.send(data)
 	});
 	// for (var products in Product){
@@ -99,52 +166,11 @@ app.get('/load', function(req, res){
 	// res.send(productList)
 
 });
-// var oauth = { 
-// 	cobrandLogin:'sbCobkcraig01', 
-// 	cobrandPassword:'14c725ce-8282-4e0b-bddb-f58a9bb3cb01'
-// }
-// request.post('https://rest.developer.yodlee.com/services/srest/restserver/v1.0/authenticate/coblogin', {cobrandLogin:'sbCobkcraig01', 
-// 	cobrandPassword:'14c725ce-8282-4e0b-bddb-f58a9bb3cb01'}, function(err, res, body){
-// 	console.log(err, body);
-// });
-function xmlToJson(xml) {
-	
-	// Create the return object
-	var obj = {};
-
-	if (xml.nodeType == 1) { // element
-		// do attributes
-		if (xml.attributes.length > 0) {
-		obj["@attributes"] = {};
-			for (var j = 0; j < xml.attributes.length; j++) {
-				var attribute = xml.attributes.item(j);
-				obj["@attributes"][attribute.nodeName] = attribute.nodeValue;
-			}
-		}
-	} else if (xml.nodeType == 3) { // text
-		obj = xml.nodeValue;
-	}
-
-	// do children
-	if (xml.hasChildNodes()) {
-		for(var i = 0; i < xml.childNodes.length; i++) {
-			var item = xml.childNodes.item(i);
-			var nodeName = item.nodeName;
-			if (typeof(obj[nodeName]) == "undefined") {
-				obj[nodeName] = xmlToJson(item);
-			} else {
-				if (typeof(obj[nodeName].push) == "undefined") {
-					var old = obj[nodeName];
-					obj[nodeName] = [];
-					obj[nodeName].push(old);
-				}
-				obj[nodeName].push(xmlToJson(item));
-			}
-		}
-	}
-	return obj;
-};
-
+app.get('/payoff', function(req, res){
+	PayOff.find({}, function (err, data){
+		res.send(data)
+	});
+});
 
 var bankInfo = {
     fid: config.account.fid
@@ -155,19 +181,44 @@ var bankInfo = {
   , pass: config.account.pass
   , accid: config.account.accid
   , acctype: config.account.acctype /* CHECKING || SAVINGS || MONEYMRKT || CREDITCARD */
-  , date_start: 20121015 /* Statement start date YYYYMMDDHHMMSS */
-  , date_end: 20131104 /* Statement end date YYYYMMDDHHMMSS */
+  , date_start: 20130930 /* Statement start date YYYYMMDDHHMMSS */
+  , date_end: 20131021 /* Statement end date YYYYMMDDHHMMSS */
 };
 
 //If second param is omitted JSON will be returned by default
-
-banking.getStatement(bankInfo, 'xml',function(res, err){
+var debtBalance =[]
+banking.getStatement(bankInfo,function(res, err){
     if(err) console.log(err)
-    console.log(res)
-
-
+    console.log(res.OFX.CREDITCARDMSGSRSV1.CCSTMTTRNRS.CCSTMTRS.LEDGERBAL)
+	var cardBalance = res.OFX.CREDITCARDMSGSRSV1.CCSTMTTRNRS.CCSTMTRS.LEDGERBAL
+	debtBalance.push(cardBalance);
+	return debtBalance
 });
 
+//send credit card balance info to client 
+app.get('/debt', function(req, res){
+	var newDebt = debtBalance
+	console.log(newDebt)
+	res.send(newDebt)
+})
+
+app.post('/percent', function (req, res){
+	PayOff.findOne({name: req.body.name}, function(err, payoffPercent){
+		if (err){
+			console.log(err);
+		}
+		else{
+			console.log(payoffPercent)
+			res.send(payoffPercent);
+		}
+	})
+});
+	
+
+
+// request.post('http://lesserthan.com/api.getDealsZip/', {zip: 10021, format: 'json'}, function(err, res, body){
+// 	console.log(res)
+// });
 
   // console.log(res.OFX.CREDITCARDMSGSRSV1.CCSTMTTRNRS)//This works for citi to get available balance in object 
 
