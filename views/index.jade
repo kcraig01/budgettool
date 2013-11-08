@@ -20,26 +20,19 @@ block content
 		
 
 		.budgetEntry 
-			.personalIncome
-				//- row.col-md-3.col-md-offset-2.text-center.text-primary Enter your monthly Income
-				row.col-md-5.col-md-offset-3.text-center.text-primary
-					.input-group.input-group-lg
-							span.input-group-addon Monthly income
-							input.income.form-control(name="budget", type = "text", placeholder="Budget")
-					//- input.budget.form-control(name="budget", type = "text", placeholder="Budget")
 			.panel-group#accordian
 				.panel.panel-default.col-md-5.col-md-offset-3
 					.panel-heading
 						.panel-title
-							a(data-toggle="collapse" data-parent="#accordion" href="#collapseOne") Enter your account info
-					.panel-collapse.collapse.in#collapseOne
+							a(data-toggle="collapse" data-parent="#accordion" href="#collapseOne") Select to enter your account info
+					.panel-collapse.collapse#collapseOne
 						.panel-body 
 							select.col-md-7.form-control.creditcard 
 								.input-group.input-group-md
-									option American Express
+									option US Bank
 									option Citi
 									option Chase
-									option Bank of Amer
+									option Bank of America
 									option Key Bank
 							.input-group.input-group-md.username
 								span.input-group-addon Bank account username:  
@@ -51,16 +44,25 @@ block content
 								span.input-group-addon Bank account password:  
 								input.bankacctid.form-control(name="password", type = "password", placeholder="Password")
 							.button.acctsubmit(type='button', class='btn btn-primary') Submit
-
-			//- .button(type="button" class="btn btn-danger" data-toggle="collapse" data-target="#demo") Test Collapse
-			//- .collpase.in#demo Stuff in here
-
 			.personalDebt
 				//- row.col-md-3.col-md-offset-2.text-center.text-primary Enter your monthly Income
 				row.col-md-5.col-md-offset-3.text-center.text-primary
 					.input-group.input-group-lg
 							span.input-group-addon Credit Card Debt: 
 							input.yourdebt.form-control(name="debt", type = "text", placeholder="DEBT")
+			.personalIncome
+				//- row.col-md-3.col-md-offset-2.text-center.text-primary Enter your monthly Income
+				row.col-md-5.col-md-offset-3.text-center.text-primary
+					.input-group.input-group-lg
+							span.input-group-addon Monthly income
+							input.income.form-control(name="budget", type = "text", placeholder="Budget")
+					//- input.budget.form-control(name="budget", type = "text", placeholder="Budget")
+			
+
+			//- .button(type="button" class="btn btn-danger" data-toggle="collapse" data-target="#demo") Test Collapse
+			//- .collpase.in#demo Stuff in here
+
+			
 
 			.category
 				row.col-md-3.col-md-offset-2.text-center.text-primary How much can you pay off?
@@ -92,3 +94,10 @@ block content
 				input.goaldate.form-control(name="budget", type = "date", placeholder="Budget")
 			row.col-md-3.text-center.text-primary  Your balance will be less than:
 				input.goalsave.form-control(name="budget", type = "text", placeholder="Amt Saved")
+			row.col-md-3.col-md-offset-2.text-center.text-primary  Did you reach your goal??
+			input.col-md-3.goalsave.form-control(name="budget", type = "text", placeholder="Yes/No")
+
+			.deals#deals
+
+
+

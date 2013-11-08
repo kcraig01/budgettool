@@ -139,6 +139,12 @@ var bank5 = new Bank({
 	fidorg: 'B1',
 	url: 'https://ofx.chase.com'
 });
+var bank6 = new Bank({
+	name: 'US Bank',
+	fid: 1401,
+	fidorg: 'US Bank',
+	url: 'https://www.oasis.cfree.com/1401.ofxgp'
+})
 
 
 bank1.save();
@@ -146,6 +152,7 @@ bank2.save();
 bank3.save();
 bank4.save();
 bank5.save();
+bank6.save();
 
 
 
@@ -228,6 +235,11 @@ app.post('/acctdata', function (req, response){
 				var debtBalance =[]
 				banking.getStatement(fetchstatement.fullbankdata,function(res, err){
 				    if(err) console.log(err)
+			   		else if (res.OFX.SIGNONMSGSRSV1.SONRS.STATUS.SEVERITY === 'ERROR'){
+			   			console.log('here')
+			   			response.send(res.OFX.SIGNONMSGSRSV1.SONRS.STATUS.SEVERITY )
+			   		}
+			   		else 
 				    console.log(res.OFX.CREDITCARDMSGSRSV1.CCSTMTTRNRS.CCSTMTRS.LEDGERBAL)
 					var cardBalance = res.OFX.CREDITCARDMSGSRSV1.CCSTMTTRNRS.CCSTMTRS.LEDGERBAL
 					debtBalance.push(cardBalance);
@@ -244,13 +256,6 @@ app.post('/acctdata', function (req, response){
 	})
 })
 
-
-//send credit card balance info to client 
-// app.get('/debt', function(req, res){
-// 	var newDebt = debtBalance
-// 	console.log(newDebt)
-// 	res.send(newDebt)
-// })
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
