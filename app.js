@@ -2,7 +2,7 @@
 /**
  * Module dependencies.
  */
-
+var fs = require('fs');
 var express = require('express');
 var routes = require('./routes');
 var user = require('./routes/user');
@@ -10,6 +10,10 @@ var http = require('http');
 var path = require('path');
 var io = require('socket.io');
 var mongoose = require('mongoose');
+var configLogin = require('./oauth.js');
+var UserLogin = require('./user.js');
+var passport = require('passport');
+var auth = require('./authentication.js');
 
 var app = express();
 var request = require('request');
@@ -20,10 +24,15 @@ var config = require('./config.js')
 app.set('port', process.env.PORT || 3000);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
+app.use(express.logger());
+app.use(express.cookieParser());
 app.use(express.favicon());
 app.use(express.logger('dev'));
 app.use(express.bodyParser());
 app.use(express.methodOverride());
+app.use(express.session({ secret: 'my_precious' }));
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -34,12 +43,37 @@ if ('development' == app.get('env')) {
 
 mongoose.connect('mongodb://localhost/saveyourself');
 
-// var User = mongoose.model('User', {
-// 	name: String,
-// 	email: String, 
-// 	income: Number,
-// 	budget: Number
+//auto send emails if user reaches goal/goal date
+// var email   = require("./node_modules/emailjs/email");
+// var server  = email.server.connect({
+//    user:    config.email.user, 
+//    password: config.email.password, 
+//    host:    "smtp.gmail.com", 
+//    ssl:     true
+
 // });
+
+// server.send({
+//    text:    "i hope this works", 
+//    from:    "<kcraig01@gmail.com>", 
+//    to:      "<kcraig01@gmail.com>",
+//    // cc:      "else <else@gmail.com>",
+//    subject: "testing emailjs"
+// }, function(err, message) { console.log(err || message); });
+
+
+// seralize and deseralize
+passport.serializeUser(function(user, done) {
+    console.log('serializeUser: ' + user._id)
+    done(null, user._id);
+});
+passport.deserializeUser(function(id, done) {
+    UserLogin.findById(id, function(err, user){
+        console.log(user)
+        if(!err) done(null, user);
+        else done(err, null)  
+    })
+});
 
 var Category = mongoose.model('Category', {
 	name: String,
@@ -157,7 +191,41 @@ bank6.save();
 
 
 app.get('/', function(req, res){
-        res.render('index')
+        res.render('layout')
+});
+
+//Passport authentication 
+app.get('/account', ensureAuthenticated, function(req, res){
+ UserLogin.findById(req.session.passport.user, function(err, user) {
+   if(err) { 
+     console.log(err); 
+   } else {
+     res.render('index', { user: user});
+   }
+})
+})
+app.get('/auth/facebook',
+ passport.authenticate('facebook'),
+function(req, res){
+});
+app.get('/auth/facebook/callback', 
+ passport.authenticate('facebook', { failureRedirect: '/' }),
+function(req, res) {
+ res.redirect('/account');
+});
+
+app.get('/auth/google',
+ passport.authenticate('google'),
+function(req, res){
+});
+app.get('/auth/google/callback', 
+ passport.authenticate('google', { failureRedirect: '/' }),
+function(req, res) {
+ res.redirect('/account');
+});
+app.get('/logout', function(req, res){
+ req.logout();
+res.redirect('/');
 });
 
 app.get('/load', function(req, res){
@@ -165,7 +233,7 @@ app.get('/load', function(req, res){
 	Category.find({}, function (err,data){
 
 		res.send(data)
-	});
+});
 	// for (var products in Product){
 	// 	var productItem = Products.find(products);
 	// 	console.log(productItem)
@@ -211,17 +279,38 @@ app.post('/percent', function (req, res){
 	
 app.post('/acctdata', function (req, response){
 	console.log(req.body.acctdata.acct.bank)
-	var userData = req.body.acctdata.acct
-	Bank.findOne({name: req.body.acctdata.acct.bank}, function (err, bank){
+	var userData = req.body.acctdata.acct 
+	// UserLogins.save({})
+	var userID = req.user._id
+	UserLogin.update({_id: userID}, 
+		{
+			$set: {
+				creditcard: userData.acctnum, 
+				bankuser: userData.username,
+				bankpass: userData.password,
+				}
+		},
+	function (err, user){
+		if (err){
+			console.log("err:",err);
+		}
+		else{
+			console.log("user:",user)
+		}
+	
+
+	});
+
+	Bank.findOne({name: req.body.acctdata.acct.bank}, function (err, res){
 		if (err){
 			console.log(err);
 		}
 		else{
 			var fetchstatement ={
 				fullbankdata:{
-					fid:bank.fid,
-					fidorg: bank.fidorg,
-					url: bank.url,
+					fid:res.fid,
+					fidorg: res.fidorg,
+					url: res.url,
 					bankid: null,
 					user: userData.username,
 					pass: userData.password,
@@ -238,24 +327,56 @@ app.post('/acctdata', function (req, response){
 			   		else if (res.OFX.SIGNONMSGSRSV1.SONRS.STATUS.SEVERITY === 'ERROR'){
 			   			console.log('here')
 			   			response.send(res.OFX.SIGNONMSGSRSV1.SONRS.STATUS.SEVERITY )
-			   		}
-			   		else 
-				    console.log(res.OFX.CREDITCARDMSGSRSV1.CCSTMTTRNRS.CCSTMTRS.LEDGERBAL)
-					var cardBalance = res.OFX.CREDITCARDMSGSRSV1.CCSTMTTRNRS.CCSTMTRS.LEDGERBAL
-					debtBalance.push(cardBalance);
-					response.send(debtBalance)
+					 }
+				   	else 
+					    console.log(res.OFX.CREDITCARDMSGSRSV1.CCSTMTTRNRS.CCSTMTRS.LEDGERBAL)
+						var cardBalance = res.OFX.CREDITCARDMSGSRSV1.CCSTMTTRNRS.CCSTMTRS.LEDGERBAL
+						debtBalance.push(cardBalance);
+						response.send(debtBalance)
 					// 	app.get('/debtbalance', function(req, res){
 					// 	console.log('here')
 					// 	var newDebt = debtBalance
 					// 	console.log(newDebt)
 					// 	res.send(newDebt)
 					// })
-				});
-					
+				});	
+			}
+		})
+	})
+
+//set interval to run the bank account checker to see if goal dates == todays date
+app.post('/goaldata', function(req, res){
+	var goaldate = req.body.goalInfo.goal.goaldate
+	var goalbalance = req.body.goalInfo.goal.targetbalance
+	console.log(goalbalance)
+	var userID = req.user._id
+	console.log(userID)
+	UserLogin.update({_id: userID}, 
+		{
+			$set: {
+				goaldate: goaldate, 
+				goalbalance: goalbalance
+				}
+			},
+	function (err, user){
+		if (err){
+			console.log("err:",err);
+		}
+		else{
+			console.log("user:",user)
 		}
 	})
-})
 
+});
+
+// test authentication
+function ensureAuthenticated(req, res, next) {
+ if (req.isAuthenticated()) { return next(); }
+res.redirect('/')
+}
+
+// port
+app.listen(1337);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));

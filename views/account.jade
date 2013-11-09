@@ -10,13 +10,14 @@ html
 		script(src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js")
 		script(src='/javascripts/prettyprint.js')
 		script(src="/javascripts/main.js")
-	.container 
-		h1 Save Yourself
+
 		.userLogin
 		a(href="/") Go home
 		br
-		a(href="/auth/facebook").button.text-center.loginFacebook(type='button', class='btn btn-primary btn-sm') Login via Facebook
-		a(href="/auth/Google").button.text-center.loginGoogle(type='button', class='btn btn-primary btn-sm') Login via Google
+		//- .button.text-center.loginFacebook(type='button', class='btn btn-primary btn-sm', href="/auth/facebook") Login via Facebook
+		a(href="/auth/facebook")
+		//- .button.text-center.loginGoogle(type='button', class='btn btn-primary btn-sm') Login via Google
+		a(href="/auth/Google")
 		//- .button.text-center.logout(type='button', class='btn btn-default btn-sm') Logout
-		//- a(href="/logout") Logout 
-		//- h5.col-md-12 You are logged in.
+		a(href="/logout")
+		h5.col-md-12 You are not logged in.

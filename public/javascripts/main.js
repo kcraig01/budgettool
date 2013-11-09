@@ -66,13 +66,25 @@ $(function(){
 			if (acctdata ==='ERROR'){
 				console.log('make an error message')
 			}
-			else {
+			else 
 				console.log(acctdata[0].BALAMT)
 				var debt = Math.abs(acctdata[0].BALAMT)
 				$('.yourdebt').val(debt)
-			}
+			
 		})
-	})
+	});
+	//set savings goal and add to user account 
+	$('.goalset').on('click', function(goalInfo){
+		var goalInfo ={
+			goal:{
+				goaldate: $('.goaldate').val(),
+				targetbalance: $('.goalbalance').val()
+			}
+		}
+		$.post('/goaldata', {goalInfo: goalInfo}, function(goalInfo){
+			console.log(goalInfo)
+		})
+	});
 
 //set payoff options from info in database 
 	$.get('/payoff', function(payoff){
@@ -88,6 +100,7 @@ $(function(){
 			$('.percentdebt').val(percent.payoffpercent)
 		})
 	});
+	
 	//update payoff percent if option selected changes
 	$('.payoffdropdown').on('change', function(){
 		var name = $('.payoffdropdown').val();
@@ -121,7 +134,6 @@ $(function(){
 			var newBalance = (debt)-(goalBudget)
 			var roundedBalance = Math.round(newBalance * 100) / 100
 			$('.goalsave').val(roundedBalance)
-			
 		}
 	})
 	//when credit card type changed, clear any entries 

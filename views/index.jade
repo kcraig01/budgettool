@@ -1,21 +1,37 @@
-extends layout
+doctype 5
+html
+	head
+		title= title
+		link(rel='stylesheet', href='/stylesheets/style.css')
+	body
+		block content
+		link(rel="stylesheet", href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css")
+		script(src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js")
+		script(src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js")
+		script(src='/javascripts/prettyprint.js')
+		script(src="/javascripts/main.js")
 
-block content 
 	.container 
+		h1 Save Yourself
 		.userLogin
-			form.form-inline(role= 'form')
-				.form-group
-					label.sr-only(for='exampleInputEmail2') Enter email
-					input#exampleInputEmail2.form-control(type='email',placeholder ='enter email')
-				.form-group
-					label.sr-only(for='exampleInputPassword2') Password
-					input#exampleInputPassword2.form-control(type='password',placeholder ='Password')
-				.checkbox
-					label
-						input(type='checkbox')
-						| Remember me
-				button.btn.btn-default(type='submit') Login 
-				button.btn.btn-default(type='submit') Sign Up
+		a(href="/") Go home
+		br
+		a(href="/logout").button.text-center.logout(type='button', class='btn btn-primary btn-sm') Logout
+		h5.col-md-12 You are logged in.
+		//- p.lead Say something worthwhile here.
+			//- form.form-inline(role= 'form')
+			//- 	.form-group
+			//- 		label.sr-only(for='exampleInputEmail2') Enter email
+			//- 		input#exampleInputEmail2.form-control(type='email',placeholder ='enter email')
+			//- 	.form-group
+			//- 		label.sr-only(for='exampleInputPassword2') Password
+			//- 		input#exampleInputPassword2.form-control(type='password',placeholder ='Password')
+			//- 	.checkbox
+			//- 		label
+			//- 			input(type='checkbox')
+			//- 			| Remember me
+			//- 	button.btn.btn-default(type='submit') Login 
+			//- 	button.btn.btn-default(type='submit') Sign Up
 				h1 Save Yourself
 		
 
@@ -93,7 +109,8 @@ block content
 			row.col-md-3.col-md-offset-2.text-center.text-primary  By this date:
 				input.goaldate.form-control(name="budget", type = "date", placeholder="Budget")
 			row.col-md-3.text-center.text-primary  Your balance will be less than:
-				input.goalsave.form-control(name="budget", type = "text", placeholder="Amt Saved")
+				input.col-md-2.goalbalance.form-control(name="budget", type = "text", placeholder="Amt Saved")
+			.button.col-md-3.goalset(type='button', class='btn btn-danger') Set Goal
 			row.col-md-3.col-md-offset-2.text-center.text-primary  Did you reach your goal??
 			input.col-md-3.goalsave.form-control(name="budget", type = "text", placeholder="Yes/No")
 
