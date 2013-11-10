@@ -13,3 +13,7 @@ a {
 .btn, .checkbox{
 	margin: 2px;
 }
+
+.budgetEntry, .pastGoal{
+display: none;
+}

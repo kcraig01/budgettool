@@ -18,24 +18,14 @@ html
 		br
 		a(href="/logout").button.text-center.logout(type='button', class='btn btn-primary btn-sm') Logout
 		h5.col-md-12 You are logged in.
-		//- p.lead Say something worthwhile here.
-			//- form.form-inline(role= 'form')
-			//- 	.form-group
-			//- 		label.sr-only(for='exampleInputEmail2') Enter email
-			//- 		input#exampleInputEmail2.form-control(type='email',placeholder ='enter email')
-			//- 	.form-group
-			//- 		label.sr-only(for='exampleInputPassword2') Password
-			//- 		input#exampleInputPassword2.form-control(type='password',placeholder ='Password')
-			//- 	.checkbox
-			//- 		label
-			//- 			input(type='checkbox')
-			//- 			| Remember me
-			//- 	button.btn.btn-default(type='submit') Login 
-			//- 	button.btn.btn-default(type='submit') Sign Up
-				h1 Save Yourself
+
+		.actionbuttons
+			.button.col-md-3.col-md-offset-3.newgoal(type='button', class='btn btn-success btn-lg') Set New Savings Goal
+			.button.col-md-3.checkgoal(type='button', class='btn btn-info btn-lg') Check Past Savings Goals
+
 		
 
-		.budgetEntry 
+		.budgetEntry
 			.panel-group#accordian
 				.panel.panel-default.col-md-5.col-md-offset-3
 					.panel-heading
@@ -57,29 +47,25 @@ html
 								span.input-group-addon Bank account password:  
 								input.bankpassword.form-control(name="password", type = "password", placeholder="Password")	
 							.input-group.input-group-md.acctid
-								span.input-group-addon Bank account password:  
+								span.input-group-addon Credit Card #:  
 								input.bankacctid.form-control(name="password", type = "password", placeholder="Password")
+							.personalIncome
+								.input-group.input-group-md
+										span.input-group-addon Monthly income
+										input.income.form-control(name="budget", type = "text", placeholder="Budget")
 							.button.acctsubmit(type='button', class='btn btn-primary') Submit
-			.personalDebt
-				//- row.col-md-3.col-md-offset-2.text-center.text-primary Enter your monthly Income
-				row.col-md-5.col-md-offset-3.text-center.text-primary
-					.input-group.input-group-lg
-							span.input-group-addon Credit Card Debt: 
-							input.yourdebt.form-control(name="debt", type = "text", placeholder="DEBT")
-			.personalIncome
-				//- row.col-md-3.col-md-offset-2.text-center.text-primary Enter your monthly Income
-				row.col-md-5.col-md-offset-3.text-center.text-primary
-					.input-group.input-group-lg
-							span.input-group-addon Monthly income
-							input.income.form-control(name="budget", type = "text", placeholder="Budget")
-					//- input.budget.form-control(name="budget", type = "text", placeholder="Budget")
-			
-
-			//- .button(type="button" class="btn btn-danger" data-toggle="collapse" data-target="#demo") Test Collapse
-			//- .collpase.in#demo Stuff in here
-
-			
-
+				.personalDebt
+					//- row.col-md-3.col-md-offset-2.text-center.text-primary Enter your monthly Income
+					row.col-md-5.col-md-offset-3.text-center.text-primary
+						.input-group.input-group-lg
+								span.input-group-addon Credit Card Debt: 
+								input.yourdebt.form-control(name="debt", type = "text", placeholder="DEBT")
+				.personalIncome
+					//- row.col-md-3.col-md-offset-2.text-center.text-primary Enter your monthly Income
+					row.col-md-5.col-md-offset-3.text-center.text-primary
+						.input-group.input-group-lg
+								span.input-group-addon Monthly income
+								input.income.form-control(name="budget", type = "text", placeholder="Budget")
 			.category
 				row.col-md-3.col-md-offset-2.text-center.text-primary How much can you pay off?
 					select.form-control.payoffdropdown 
@@ -89,32 +75,37 @@ html
 			.percent
 				row.col-md-2.text-center.text-primary  % of Income	
 					input.percentdebt.form-control(name="budget", type = "text", placeholder="Budget")
-			//- .category
-			//- 	row.col-md-3.col-md-offset-2.text-center.text-primary Select Category
-			//- 		select.form-control.productdropdown 
-			//- .currentSpend
-			//- 	row.col-md-2.text-center.text-primary  Current Spend	
-			//- 		input.budget.form-control.currentspend(name="budget", type = "text", placeholder="Budget")
-			//- .percent
-			//- 	row.col-md-2.text-center.text-primary  % of Income	
-			//- 		input.percentIncome.form-control(name="budget", type = "text", placeholder="Budget")
-			//- row.col-md-2.col-md-offset-5.text-center.text-primary  Goal Budget	
-			//- 	input.goalbudget.form-control(name="budget", type = "text", placeholder="Budget")
-			//- row.col-md-2.text-center.text-primary  % of Income	
-			//- 	input.percentbudget.form-control(name="budget", type = "text", placeholder="Budget")
-			//- row.col-md-3.col-md-offset-2.text-center.text-primary  By this date:
-			//- 	input.goaldate.form-control(name="budget", type = "date", placeholder="Budget")
-			//- row.col-md-2.text-center.text-primary  Saved:
-			//- 	input.goalsave.form-control(name="budget", type = "text", placeholder="Amt Saved")
 			row.col-md-3.col-md-offset-2.text-center.text-primary  By this date:
 				input.goaldate.form-control(name="budget", type = "date", placeholder="Budget")
-			row.col-md-3.text-center.text-primary  Your balance will be less than:
+			row.col-md-3.text-center.text-primary  Your balance will be less than
 				input.col-md-2.goalbalance.form-control(name="budget", type = "text", placeholder="Amt Saved")
 			.button.col-md-3.goalset(type='button', class='btn btn-danger') Set Goal
 			row.col-md-3.col-md-offset-2.text-center.text-primary  Did you reach your goal??
-			input.col-md-3.goalsave.form-control(name="budget", type = "text", placeholder="Yes/No")
+				input.col-md-3.goalsave.form-control(name="budget", type = "text", placeholder="Yes/No")
+			.goalset
+			.button.acctsubmit(type='button', class='btn btn-primary') Set Goal
+
+		.pastGoal
+			.goaldate
+				row.col-md-2.col-md-offset-3.text-center.text-primary Date Goal Set 
+					input.yourdebt.form-control(name="goaldate", type = "date", placeholder="Date of last visit")
+			.pastDebt 
+				row.col-md-3.text-center.text-primary Your Balance Was: 
+					input.income.form-control(name="debtbalance", type = "number", placeholder="past balance")
+			.targetdate
+				row.col-md-2.col-md-offset-3.text-center.text-primary  Goal Set for:
+					input.goaldate.form-control(name="goaldate", type = "date", placeholder="Goal Date")
+			.targetbalance	
+				row.col-md-3.text-center.text-primary  Goal Balance:
+					input.col-md-2.goalbalance.form-control(name="budget", type = "number", placeholder="Goal Balance")
+			.actualbalance
+				row.col-md-5.col-md-offset-3.text-center.text-primary
+							.input-group.input-group-lg
+									span.input-group-addon Actual Balance: 
+									input.yourdebt.form-control(name="debt", type = "text", placeholder="DEBT")
+			.goalsuccess
+				row.col-md-3.col-md-offset-4.text-center.text-primary  Did you reach your goal??
 
 			.deals#deals
-
 
 

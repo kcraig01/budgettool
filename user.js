@@ -6,12 +6,22 @@ var UserLogin = mongoose.model('UserLogin', {
   name: String,
   created: Date,
   email: String, 
+  currentDate: Date,
+  currentbalance: Date, 
   goaldate: Date,
   goalbalance: Number,
+  actualbalance: Number, 
   bankuser: String,
   bankpass: String,
-  creditCard: Number 
+  creditCard: Number,
+  goaldetails: []
 });
 
+// var goaldetails = mongoose
+//   currentDate: Date,
+//   currentbalance: Date, 
+//   goaldate: Date,
+//   goalbalance: Number,
+//   actualbalance: Number, 
 
 module.exports = UserLogin;

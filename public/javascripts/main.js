@@ -22,6 +22,24 @@ $(function(){
                 $('#deals').append('<li>'+data[i]['title']+'</li>');
         }
 	}
+	//select to enter new goal - displays goal entry form 
+	$('.newgoal').on('click', function (){
+		console.log('here')
+		$('.budgetEntry').show()
+		$('.newgoal').hide()
+		$('.checkgoal').hide()
+	})
+	//user can view past goal and see if they have achieved it
+	//returns goal data and current balance
+	$('.checkgoal').on('click', function (){
+		console.log('here')
+		$('.pastGoal').show()
+		$('.newgoal').hide()
+		$('.checkgoal').hide()
+			$.post('/pastgoal', function(pastgoal){
+				console.log(pastgoal)
+			})
+	})
 
 	$.get('/load', function(categories){
 		$('.currentspend').on('keyup', function(e){
