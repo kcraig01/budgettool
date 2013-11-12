@@ -14,6 +14,7 @@ var configLogin = require('./oauth.js');
 var UserLogin = require('./user.js');
 var passport = require('passport');
 var auth = require('./authentication.js');
+var moment = require('moment');
 
 var app = express();
 var request = require('request');
@@ -40,7 +41,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
-
+moment().format();
 mongoose.connect('mongodb://localhost/saveyourself');
 
 //auto send emails if user reaches goal/goal date
@@ -282,13 +283,27 @@ app.post('/acctdata', function (req, response){
 	console.log(req.body.acctdata.acct.bank)
 	var userData = req.body.acctdata.acct 
 	// UserLogins.save({})
-	var userID = req.user._id
+	var userID = req.user._id;
+//calculate start and end date for current bank statement
+	var year = moment().get('year').toString();
+	var lastmonth = moment().get('month').toString();
+	var thismonthcalc = Number(lastmonth)+1
+	var thismonth = thismonthcalc.toString()  // 0 to 11
+	var day = moment().get('date').toString();
+	var today = year+thismonth+day;
+	console.log(today)
+	var laststatement = year+lastmonth+day
+
 	UserLogin.update({_id: userID}, 
 		{
 			$set: {
 				creditcard: userData.acctnum, 
 				bankuser: userData.username,
 				bankpass: userData.password,
+				income: userData.income,
+				bank: userData.bank,
+				currentDate: today
+
 				}
 		},
 	function (err, user){
@@ -306,6 +321,11 @@ app.post('/acctdata', function (req, response){
 			console.log(err);
 		}
 		else{
+			
+
+			// var day = moment(today)
+			// console.log("today:", day)
+			// console.log("todays date:",now)
 			var fetchstatement ={
 				fullbankdata:{
 					fid:res.fid,
@@ -316,8 +336,8 @@ app.post('/acctdata', function (req, response){
 					pass: userData.password,
 					accid: userData.acctnum,
 					acctype: 'CREDITCARD',
-					date_start: 20130930, /* Statement start date YYYYMMDDHHMMSS */
-  					date_end: 20131021 /* Statement end date YYYYMMDDHHMMSS */
+					date_start: laststatement, /* Statement start date YYYYMMDDHHMMSS */
+  					date_end: today /* Statement end date YYYYMMDDHHMMSS */
 				}
 			}
 				console.log(fetchstatement.fullbankdata)
@@ -346,7 +366,7 @@ app.post('/acctdata', function (req, response){
 
 //user view past goal - return users goal data and run current check
 app.post('/pastgoal', function (req, res){
-	console.log(req.body)
+	console.log("does this work?",req.body)
 	var userID = req.user._id
 	UserLogin.findOne({_id: userID}, function (err, user){
 		if (err){
@@ -354,65 +374,33 @@ app.post('/pastgoal', function (req, res){
 		}
 		else{
 			console.log("user:",user)
-			res.send(user)
+			res.send({goals: user.goaldetails})
 		}
 	});
-	// 	Bank.findOne({name: req.body.acctdata.acct.bank}, function (err, res){
-	// 	if (err){
-	// 		console.log(err);
-	// 	}
-	// 	else{
-	// 		var fetchstatement ={
-	// 			fullbankdata:{
-	// 				fid:res.fid,
-	// 				fidorg: res.fidorg,
-	// 				url: res.url,
-	// 				bankid: null,
-	// 				user: userData.username,
-	// 				pass: userData.password,
-	// 				accid: userData.acctnum,
-	// 				acctype: 'CREDITCARD',
-	// 				date_start: 20130930, /* Statement start date YYYYMMDDHHMMSS */
- //  					date_end: 20131021 /* Statement end date YYYYMMDDHHMMSS */
-	// 			}
-	// 		}
-	// 			console.log(fetchstatement.fullbankdata)
-	// 			var debtBalance =[]
-	// 			banking.getStatement(fetchstatement.fullbankdata,function(res, err){
-	// 			    if(err) console.log(err)
-	// 		   		else if (res.OFX.SIGNONMSGSRSV1.SONRS.STATUS.SEVERITY === 'ERROR'){
-	// 		   			console.log('here')
-	// 		   			response.send(res.OFX.SIGNONMSGSRSV1.SONRS.STATUS.SEVERITY )
-	// 				 }
-	// 			   	else 
-	// 				    console.log(res.OFX.CREDITCARDMSGSRSV1.CCSTMTTRNRS.CCSTMTRS.LEDGERBAL)
-	// 					var cardBalance = res.OFX.CREDITCARDMSGSRSV1.CCSTMTTRNRS.CCSTMTRS.LEDGERBAL
-	// 					debtBalance.push(cardBalance);
-	// 					response.send(debtBalance)
-	// 				// 	app.get('/debtbalance', function(req, res){
-	// 				// 	console.log('here')
-	// 				// 	var newDebt = debtBalance
-	// 				// 	console.log(newDebt)
-	// 				// 	res.send(newDebt)
-	// 				// })
-	// 			});	
-	// 		}
-	// 	})
-	// })
+
 	});
 //set interval to run the bank account checker to see if goal dates == todays date
 app.post('/goaldata', function(req, res){
+	console.log("does this work?",req.body.goalInfo)
+	var today = new Date();
 	var goaldate = req.body.goalInfo.goal.goaldate
-	var goalbalance = req.body.goalInfo.goal.targetbalance
-	console.log(goalbalance)
+	var goalbalance = req.body.goalInfo.goal.goalbalance
+	var email = req.body.goalInfo.goal.email
+	var zipcode = req.body.goalInfo.goal.zipcode
+	var debt = req.body.goalInfo.goal.debt
 	var userID = req.user._id
 	console.log(userID)
 	UserLogin.update({_id: userID}, 
 		{
-			$set: {
+			$push: {goaldetails: {
 				goaldate: goaldate, 
-				goalbalance: goalbalance
+				goalbalance: goalbalance,
+				dategoalset: today,
+				email: email,
+				zipcode: zipcode,
+				currentbalance: debt
 				}
+			}
 			},
 	function (err, user){
 		if (err){
@@ -420,10 +408,65 @@ app.post('/goaldata', function(req, res){
 		}
 		else{
 			console.log("user:",user)
+			res.send("success")
 		}
 	})
 
 });
+//user returns to check if they've met goal 
+app.post('/checkgoalbalance', function(req, response){
+	console.log(req.user.bank);
+	console.log("sent:",req.body)
+	console.log(req.user.goaldetails)
+	console.log("this should be user data:",req.user);
+	var dateend = req.body.statementdate.dateend
+	var formatone = dateend.replace('-','')
+	var formatdateend = formatone.replace('-','')
+	var formatedatestart = formatdateend - 100
+		Bank.findOne({name: req.user.bank}, function (err, res){
+		if (err){
+			console.log(err);
+		}
+		else{
+
+			var fetchstatement ={
+				fullbankdata:{
+					fid:res.fid,
+					fidorg: res.fidorg,
+					url: res.url,
+					bankid: null,
+					user: req.user.bankuser,
+					pass: req.user.bankpass,
+					accid: req.user.creditcard,
+					acctype: 'CREDITCARD',
+					date_start: formatedatestart, /* Statement start date YYYYMMDDHHMMSS */
+  					date_end: formatdateend/* Statement end date YYYYMMDDHHMMSS */
+				}
+			}
+				console.log(fetchstatement.fullbankdata)
+				var debtBalance =[]
+				banking.getStatement(fetchstatement.fullbankdata,function(res, err){
+				    if(err) console.log(err)
+			   		else if (res.OFX.SIGNONMSGSRSV1.SONRS.STATUS.SEVERITY === 'ERROR'){
+			   			console.log('here')
+			   			response.send(res.OFX.SIGNONMSGSRSV1.SONRS.STATUS.SEVERITY )
+					 }
+				   	else 
+					    console.log(res.OFX.CREDITCARDMSGSRSV1.CCSTMTTRNRS.CCSTMTRS.LEDGERBAL)
+						var cardBalance = res.OFX.CREDITCARDMSGSRSV1.CCSTMTTRNRS.CCSTMTRS.LEDGERBAL
+						debtBalance.push(cardBalance);
+						response.send(debtBalance)
+					// 	app.get('/debtbalance', function(req, res){
+					// 	console.log('here')
+					// 	var newDebt = debtBalance
+					// 	console.log(newDebt)
+					// 	res.send(newDebt)
+					// })
+				});	
+			}
+		})
+	});
+
 
 // test authentication
 function ensureAuthenticated(req, res, next) {

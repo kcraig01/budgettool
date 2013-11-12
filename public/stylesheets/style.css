@@ -14,6 +14,6 @@ a {
 	margin: 2px;
 }
 
-.budgetEntry, .pastGoal{
+.budgetEntry, .pastGoal, .postGoal{
 display: none;
 }
