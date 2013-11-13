@@ -43,7 +43,8 @@ if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
 moment().format();
-mongoose.connect('mongodb://localhost/saveyourself');
+var mongo = process.env.MONGOLAB_URI || 'mongodb://localhost/saveyourself'
+mongoose.connect(mongo);
 
 
 // seralize and deseralize
