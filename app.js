@@ -20,7 +20,7 @@ var moment = require('moment');
 var app = express();
 var request = require('request');
 var banking = require('banking');
-var config = require('./config.js')
+// var config = require('./config.js')
 
 // all environments
 app.set('port', process.env.PORT || 3000);
