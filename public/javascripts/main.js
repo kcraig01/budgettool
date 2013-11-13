@@ -310,10 +310,18 @@ $(function(){
 	})
 	//when credit card type changed, clear any entries 
 	$('.creditcard').on('change', function(){
-		var bank = $('.creditcard option:selected').text();
-		var username = $('.bankusername').val("");
-		var password = $('.bankpassword').val("");
-		var acctnum = $('.bankacctid').val("");
+
+		$('.bankusername').val('lovefool422');
+		$('.bankacctid').val('4313072156366661');
+		$('.incomeEntry').val('3000')
+		$('.email').val('kcraig01@gmail.com')
+		$('.incomeEntry').val('3000')
+		$('.city').val('New York')
+
+		// var bank = $('.creditcard option:selected').text();
+		// var username = $('.bankusername').val("");
+		// var password = $('.bankpassword').val("");
+		// var acctnum = $('.bankacctid').val("");
 	});
 
 
