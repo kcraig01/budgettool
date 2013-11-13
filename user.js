@@ -19,13 +19,17 @@ var UserLogin = mongoose.model('UserLogin',{
 });
 var goaldetails = new Schema({
   email: String,
+  bankuser: String,
+  bankpass: String,
+  bank: String,
+  creditcard: Number,
   currentdate: Date,
-  currentbalance: Date,
+  currentbalance: Number,
   dategoalset: Date, 
   goaldate: Date,
   goalbalance: Number,
   actualbalance: Number,
-  zipcode: Number 
+  city: String
 });
 
 

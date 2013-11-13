@@ -12,6 +12,7 @@ var io = require('socket.io');
 var mongoose = require('mongoose');
 var configLogin = require('./oauth.js');
 var UserLogin = require('./user.js');
+var Bank = require('./bank.js');
 var passport = require('passport');
 var auth = require('./authentication.js');
 var moment = require('moment');
@@ -43,24 +44,6 @@ if ('development' == app.get('env')) {
 }
 moment().format();
 mongoose.connect('mongodb://localhost/saveyourself');
-
-//auto send emails if user reaches goal/goal date
-// var email   = require("./node_modules/emailjs/email");
-// var server  = email.server.connect({
-//    user:    config.email.user, 
-//    password: config.email.password, 
-//    host:    "smtp.gmail.com", 
-//    ssl:     true
-
-// });
-
-// server.send({
-//    text:    "i hope this works", 
-//    from:    "<kcraig01@gmail.com>", 
-//    to:      "<kcraig01@gmail.com>",
-//    // cc:      "else <else@gmail.com>",
-//    subject: "testing emailjs"
-// }, function(err, message) { console.log(err || message); });
 
 
 // seralize and deseralize
@@ -112,84 +95,6 @@ category3.save();
 category4.save();
 category5.save();
 category6.save();
-
-var PayOff = mongoose.model('PayOff',{
-	name: String,
-	payoffpercent: Number
-});
-var payoff1 = new PayOff({
-	name: "Just a little bit",
-	payoffpercent: 5
-});
-var payoff2 = new PayOff({
-	name: "More than a little",
-	payoffpercent:10
-});
-var payoff3 = new PayOff({
-	name: "Want this debt gone asap",
-	payoffpercent: 15
-});
-var payoff4 = new PayOff({
-	name: "Overachiever",
-	payoffpercent: 20
-});
-payoff1.save();
-payoff2.save();
-payoff3.save();
-payoff4.save();
-
-var Bank= mongoose.model('Bank',{
-	name: String,
-	fid: Number, 
-	fidorg: String,
-	url: String 
-});
-var bank1 = new Bank({
-	name: 'Key Bank',
-	fid: 5901,
-	fidorg: 'KeyBank',
-	url: 'https://www.oasis.cfree.com/fip/genesis/prod/05901.ofx'
-});
-var bank2 = new Bank({
-	name: 'Bank of America',
-	fid: 5959,
-	fidorg: 'HAN',
-	url: 'https://ofx.bankofamerica.com/cgi-forte/fortecgi?servicename=ofx_2-3&pagename=ofx'
-});
-var bank3 = new Bank({
-	name: 'American Express',
-	fid: 3101,
-	fidorg: 'AMEX',
-	url: 'https://online.americanexpress.com/myca/ofxdl/desktop/desktopDownload.do?request_type=nl_ofxdownload'
-});
-var bank4 = new Bank({
-	name: 'Citi',
-	fid: 24909,
-	fidorg: 'Citigroup',
-	url: 'https://www.accountonline.com/cards/svc/CitiOfxManager.do'
-});
-var bank5 = new Bank({
-	name: 'Chase',
-	fid: 10898,
-	fidorg: 'B1',
-	url: 'https://ofx.chase.com'
-});
-var bank6 = new Bank({
-	name: 'US Bank',
-	fid: 1401,
-	fidorg: 'US Bank',
-	url: 'https://www.oasis.cfree.com/1401.ofxgp'
-})
-
-
-bank1.save();
-bank2.save();
-bank3.save();
-bank4.save();
-bank5.save();
-bank6.save();
-
-
 
 app.get('/', function(req, res){
         res.render('layout')
@@ -244,39 +149,24 @@ app.get('/load', function(req, res){
 	// res.send(productList)
 
 });
-app.get('/payoff', function(req, res){
-	PayOff.find({}, function (err, data){
-		res.send(data)
-	});
-});
 
-var bankInfo = {
-    fid: config.account.fid
-  , fidorg: config.account.fidorg
-  , url: config.account.url
-  , bankid: config.account.bankid
-  , user: config.account.user
-  , pass: config.account.pass
-  , accid: config.account.accid
-  , acctype: config.account.acctype /* CHECKING || SAVINGS || MONEYMRKT || CREDITCARD */
-  , date_start: 20130930 /* Statement start date YYYYMMDDHHMMSS */
-  , date_end: 20131021 /* Statement end date YYYYMMDDHHMMSS */
-};
+
+// var bankInfo = {
+//     fid: config.account.fid
+//   , fidorg: config.account.fidorg
+//   , url: config.account.url
+//   , bankid: config.account.bankid
+//   , user: config.account.user
+//   , pass: config.account.pass
+//   , accid: config.account.accid
+//   , acctype: config.account.acctype /* CHECKING || SAVINGS || MONEYMRKT || CREDITCARD */
+//   , date_start: 20130930 /* Statement start date YYYYMMDDHHMMSS */
+//   , date_end: 20131021 /* Statement end date YYYYMMDDHHMMSS */
+// };
 
 //If second param is omitted JSON will be returned by default
 
 
-app.post('/percent', function (req, res){
-	PayOff.findOne({name: req.body.name}, function(err, payoffPercent){
-		if (err){
-			console.log(err);
-		}
-		else{
-			console.log(payoffPercent)
-			res.send(payoffPercent);
-		}
-	})
-});
 
 //update user account db record after user adds login and cc info	
 app.post('/acctdata', function (req, response){
@@ -302,9 +192,10 @@ app.post('/acctdata', function (req, response){
 				bankpass: userData.password,
 				income: userData.income,
 				bank: userData.bank,
+				city: userData.city,
 				currentDate: today
-
 				}
+		
 		},
 	function (err, user){
 		if (err){
@@ -321,11 +212,6 @@ app.post('/acctdata', function (req, response){
 			console.log(err);
 		}
 		else{
-			
-
-			// var day = moment(today)
-			// console.log("today:", day)
-			// console.log("todays date:",now)
 			var fetchstatement ={
 				fullbankdata:{
 					fid:res.fid,
@@ -353,12 +239,6 @@ app.post('/acctdata', function (req, response){
 						var cardBalance = res.OFX.CREDITCARDMSGSRSV1.CCSTMTTRNRS.CCSTMTRS.LEDGERBAL
 						debtBalance.push(cardBalance);
 						response.send(debtBalance)
-					// 	app.get('/debtbalance', function(req, res){
-					// 	console.log('here')
-					// 	var newDebt = debtBalance
-					// 	console.log(newDebt)
-					// 	res.send(newDebt)
-					// })
 				});	
 			}
 		})
@@ -368,6 +248,7 @@ app.post('/acctdata', function (req, response){
 app.post('/pastgoal', function (req, res){
 	console.log("does this work?",req.body)
 	var userID = req.user._id
+	console.log("user:",req.user)
 	UserLogin.findOne({_id: userID}, function (err, user){
 		if (err){
 			console.log("err:",err);
@@ -386,22 +267,54 @@ app.post('/goaldata', function(req, res){
 	var goaldate = req.body.goalInfo.goal.goaldate
 	var goalbalance = req.body.goalInfo.goal.goalbalance
 	var email = req.body.goalInfo.goal.email
-	var zipcode = req.body.goalInfo.goal.zipcode
+	var city = req.body.goalInfo.goal.city
 	var debt = req.body.goalInfo.goal.debt
+	var creditcard = req.body.goalInfo.goal.creditcard;
+	var bank = req.body.goalInfo.goal.bank
+	var bankuser = req.body.goalInfo.goal.bankuser
+	var bankpass = req.body.goalInfo.goal.bankpass
 	var userID = req.user._id
 	console.log(userID)
-	UserLogin.update({_id: userID}, 
+		// UserLogin.update({_id: userID}, 
+  //           {
+  //                   $push: {goaldetails: {
+  //                           goaldate: goaldate, 
+  //                           goalbalance: goalbalance,
+  //                           dategoalset: today,
+  //                           email: email,
+  //                           city: city,
+  //                           currentbalance: debt
+  //                           }
+  //                   }
+  //                   },
+    UserLogin.update({_id: userID}, 
 		{
 			$push: {goaldetails: {
+				currentbalance: debt,
+				bank: bank,
+				creditcard: creditcard,
+				bankuser: bankuser,
+				bankpass: bankpass,
 				goaldate: goaldate, 
 				goalbalance: goalbalance,
 				dategoalset: today,
 				email: email,
-				zipcode: zipcode,
-				currentbalance: debt
+				city: city
 				}
 			}
 			},
+	// UserLogin.update({_id: userID}, 
+	// 	{
+	// 		$set: {goaldetails: {
+	// 			goaldate: goaldate, 
+	// 			goalbalance: goalbalance,
+	// 			dategoalset: today,
+	// 			email: email,
+	// 			city: city,
+	// 			currentbalance: debt
+	// 			}
+	// 		}
+	// 		},
 	function (err, user){
 		if (err){
 			console.log("err:",err);
@@ -415,34 +328,44 @@ app.post('/goaldata', function(req, res){
 });
 //user returns to check if they've met goal 
 app.post('/checkgoalbalance', function(req, response){
-	console.log(req.user.bank);
+	console.log(req.user);
 	console.log("sent:",req.body)
 	console.log(req.user.goaldetails)
 	console.log("this should be user data:",req.user);
 	var dateend = req.body.statementdate.dateend
+	console.log("bank", dateend)
 	var formatone = dateend.replace('-','')
 	var formatdateend = formatone.replace('-','')
 	var formatedatestart = formatdateend - 100
-		Bank.findOne({name: req.user.bank}, function (err, res){
+		Bank.findOne({name: req.body.statementdate.bank}, function (err, res){
 		if (err){
 			console.log(err);
 		}
-		else{
-
-			var fetchstatement ={
-				fullbankdata:{
-					fid:res.fid,
-					fidorg: res.fidorg,
-					url: res.url,
-					bankid: null,
-					user: req.user.bankuser,
-					pass: req.user.bankpass,
-					accid: req.user.creditcard,
-					acctype: 'CREDITCARD',
-					date_start: formatedatestart, /* Statement start date YYYYMMDDHHMMSS */
-  					date_end: formatdateend/* Statement end date YYYYMMDDHHMMSS */
-				}
+		else{UserLogin.find({goaldetails: {$elemMatch:
+			{
+			bank: req.body.statementdate.bank}
 			}
+			}, 
+			function (err, match){
+			if (err){
+				console.log("err:",err);
+			}
+			else{
+				console.log("match:", match[0].goaldetails)
+				var fetchstatement ={
+					fullbankdata:{
+						fid:res.fid,
+						fidorg: res.fidorg,
+						url: res.url,
+						bankid: null,
+						user: match[0].bankuser,
+						pass: match[0].bankpass,
+						accid: match[0].creditcard,
+						acctype: 'CREDITCARD',
+						date_start: formatedatestart, /* Statement start date YYYYMMDDHHMMSS */
+	  					date_end: formatdateend/* Statement end date YYYYMMDDHHMMSS */
+					}
+				}
 				console.log(fetchstatement.fullbankdata)
 				var debtBalance =[]
 				banking.getStatement(fetchstatement.fullbankdata,function(res, err){
@@ -462,10 +385,49 @@ app.post('/checkgoalbalance', function(req, response){
 					// 	console.log(newDebt)
 					// 	res.send(newDebt)
 					// })
-				});	
+				});
 			}
+		});
+		}
 		})
 	});
+
+// var checkgoals = function(){
+// 	var today = moment().format("YYYY-MM-DD");
+// 	UserLogin.find({ 
+// 			goaldetails: {$elemMatch: {
+// 			goaldate: today}
+// 			}
+// 			}, 
+// 			function (err, match){
+// 			if (err){
+// 				console.log("err:",err);
+// 			}
+// 			else{
+// 				console.log("match:",match[0].goaldetails[0].email)
+					
+// 				//auto send emails if user reaches goal/goal date
+// 				var email   = require("./node_modules/emailjs/email");
+// 				var server  = email.server.connect({
+// 				   user:    config.email.user, 
+// 				   password: config.email.password, 
+// 				   host:    "smtp.gmail.com", 
+// 				   ssl:     true
+
+// 				});
+
+// 				server.send({
+// 				   text:    "You set a savings goal for today. Login to see if you've met your goal! ", 
+// 				   from:    "<saveyourselftest@gmail.com>", 
+// 				   to:      match[0].goaldetails[0].email,
+// 				   // cc:      "else <else@gmail.com>",
+// 				   subject: "Have you met your savings goal?"
+// 				}, function(err, message) { console.log(err || message); });
+// 				return(match)
+// 			}
+// 		});
+// }
+// setInterval(checkgoals(), 86400000)
 
 
 // test authentication

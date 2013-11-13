@@ -1,27 +1,5 @@
 $(function(){
 //SideBuy API 
-	// var api_key = '8c390e2e8545cb67facb5b45cea0c3fd';
-	// var city = 'new-york';// Set Location
-	// var limit = '0-100';
-	// var sort = 'expiryepoch|1';
-
-	// var message = { 
- //  	'action': 'http://v1.sidebuy.com/api/get/'+api_key+'/?'+'city='+city+'&limit='+limit+'&sort='+sort,
- //  	'method': 'GET'
-	// };
-
-	// $.ajax({
-	//   'url': message.action,
-	//   'cache': true,
-	//   'dataType': 'jsonp',
-	//   'jsonpCallback': 'cb'
-	// });
-	// function cb(data){
- //        for (var i = 0; i < data.length; i++) {
- //        	console.log('here')
- //                $('#deals').append('<li>'+data[i]['title']+'</li>');
- //        }
-	// }
 
 	//select to enter new goal - displays goal entry form 
 	$('.newgoal').on('click', function (){
@@ -35,22 +13,33 @@ $(function(){
 	//user can view past goal and see if they have achieved it
 	//returns goal data and current balance
 	$('.checkgoal').on('click', function (){
-		console.log('here')
-		$('.pastGoal').show()
-		$('.newgoal').hide()
-		$('.checkgoal').hide()
-			$.post('/pastgoal', function(pastgoal){
+		$.post('/pastgoal', function(pastgoal){
 				console.log(pastgoal.goals);
 				console.log(pastgoal.goals.length);
-			
-				for (var i=0; i<pastgoal.goals.length; i++){
-					$('.pastGoal').append('<div class="input-group"><span class="input-group-addon">"On"</span><input type="date" class="form-control goalsetdate" placeholder="Goal Set"></div><div class="input-group "><span class="input-group-addon">"Your Debt Was"</span><input type="number" class="form-control pastbalance" placeholder="Past Balance"></div><div class="input-group goaldate"><span class="input-group-addon">"Goal Date"</span><input type="date" class="form-control goaldate" placeholder="Goal Date"></div><div class="input-group goalrembalance"><span class="input-group-addon ">"Goal Balance"</span><input type="number" class="form-control goalrembalance" placeholder="Goal Set"></div><button type="button" class="btn btn-danger balancegoalcheck">Check Goal</button>')
+				if (pastgoal.goals.length>0){
+					for (var i=0; i<pastgoal.goals.length; i++){
+					$('.pastGoal').show()
+					$('.newgoal').hide()
+					$('.checkgoal').hide()
+					$('.deals').hide()
+					$('.listgoals').append('<div class="goalgrouping"><div class="input-group"><span class="input-group-addon">"On"</span><input type="date" class="form-control goalsetdate goalsetdate'+[i]+'" placeholder="Goal Set"></div><div class="input-group "><span class="input-group-addon">"Your Card"</span><input type="text" class="form-control card card'+[i]+'" placeholder="Card Name"></div><div class="input-group "><span class="input-group-addon">"Your Debt Was"</span><input type="number" class="form-control pastbalance pastbalance'+[i]+'" placeholder="Past Balance"></div><div class="input-group"><span class="input-group-addon">"Goal Date"</span><input type="date" class="form-control goaldate goaldate'+[i]+'" placeholder="Goal Date"></div><div class="input-group"><span class="input-group-addon ">"Goal Balance"</span><input type="number" class="form-control goalrembalance goalrembalance' +[i]+'" placeholder="Goal Set"></div><button type="button" class="btn btn-danger balancegoalcheck">Check Goal</button></div>')
 						var dategoalset = pastgoal.goals[i].dategoalset.slice(0,-14)
-						$('.goalsetdate').val(dategoalset);
-						$('.pastbalance').val(pastgoal.goals[i].currentbalance)
-						$('.goaldate').val(pastgoal.goals[i].goaldate)
-						$('.goalrembalance').val(pastgoal.goals[i].goalbalance)
+						$('.card'+[i]).val(pastgoal.goals[i].bank);
+						$('.goalsetdate'+[i]).val(dategoalset);
+						$('.pastbalance'+[i]).val(pastgoal.goals[i].currentbalance)
+						$('.goaldate'+[i]).val(pastgoal.goals[i].goaldate)
+						$('.goalrembalance'+[i]).val(pastgoal.goals[i].goalbalance)
+						console.log("targetbalance:",pastgoal.goals[i].goalbalance);
 					}
+				}
+					else{
+						console.log("here")
+						$('.budgetEntry').show()
+						$('.newgoal').hide()
+						$('.checkgoal').hide()
+						$('.budgetEntry').prepend("<p class='addgoals'> You don't have any goals enetered! Enter one in the form below:")
+					}
+					
 					// for (var i=0; i<pastgoal.goals.length; i++){
 					// $('.goalgroup').append(
 					// 	'<div class=panel "panel-default"><div class="panel-heading"><h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href=#'+pastgoal.goals[i].goaldate+'>Collapsible Group Item #1</a></h4></div><div id=#'+pastgoal.goals[i].goaldate+' class="panel-collapse collapse in"><div class="panel-body">Text Here</div></div></div>')
@@ -66,18 +55,76 @@ $(function(){
 //when user selects goal to verify, send dates to server to retrieve statement
 	$(document).on('click','.balancegoalcheck', function(){
 		console.log('here')
-		var dateend = $(this).siblings(".goaldate").val()
-		var startdate = $(this).closest(".goalsetdate").val()
+		var parent = $(this).parent('.goalgrouping')
+		console.log("parent",parent)
+		var dateend = parent.find('.goaldate').val();
+		var startdate = parent.find('.goalsetdate').val();
+		var olddebt = parent.find('.pastbalance').val();
+		var newbal = parent.find('.goalrembalance').val();
+		var bank = parent.find('.card').val();
+		console.log(bank)
+		var savings = olddebt - newbal
+		var roundedsavings = Math.round(savings*100)/100
+		console.log("savings:",savings)
+		console.log($(this).siblings(".goaldate"))
+		var that = $(this);
 		var statementdate = {
-			dateend: dateend
+			dateend: dateend,
+			bank: bank
 		}
 		console.log(startdate)
 		console.log(dateend)
 		$.post('/checkgoalbalance',{statementdate: statementdate}, function(matchbalance){
-			console.log(matchbalance)
 			console.log(matchbalance[0].BALAMT)
-		})
-	})
+			var actualbalance = Math.abs(matchbalance[0].BALAMT)
+			var goalrembalance = Number(parent.find('.goalrembalance').val())
+			console.log(actualbalance)
+			console.log(goalrembalance)
+			//if statement balance does not equal goal, no deals 
+			if (actualbalance >= goalrembalance){
+				console.log('bad!')
+			}
+			//if goal is met - show deals 
+				else {
+				console.log("woohoo!!!")
+				$('.deals').show()
+				$('.listgoals').hide()
+
+					var api_key = '8c390e2e8545cb67facb5b45cea0c3fd';
+					var city = 'new-york';// Set Location
+					var limit = '0-30';
+					var sort = 'price|1';
+
+					$.ajax({
+						url : 'http://v1.sidebuy.com/api/get/'+api_key+'/?'+'city='+city+'&limit='+limit+'&sort='+sort,
+						cache : true,
+						dataType : 'jsonp',
+						success : function(data){
+							console.log(data)
+							var dealarray = []
+							//only display deals that are less than the savings the user has made
+							for (var i = 0; i < data.length; i++) {
+								console.log(roundedsavings)
+								if (data[i].price<= 30){
+									dealarray.push(data[i])
+								}
+							}
+							//append deals to page 
+							for (var i = 0; i < dealarray.length; i++) {
+								console.log('here')
+							    $('#deals').append('<li><a href="'+dealarray[i]['link']+'">$'+dealarray[i]['price']+": "+dealarray[i]['title']+'</li>');
+							}
+						}		
+					})
+			// //if goal is not met, show budgeting suggestions
+			// else {
+			// 	console.log("bad!!")
+			// }
+			
+			}
+		});
+	});
+	
 	// $.get('/load', function(categories){
 		// $('.percentdebt').on('keyup', function(e){
 		// 	$el = $(this);
@@ -115,7 +162,6 @@ $(function(){
 			income: income,
 			}
 		}
-		acctInfo.push(acctdata);
 
 		//Send object of entered acct info to retrieve debt data
 		$.post('/acctdata', {acctdata: acctdata}, function(acctdata){
@@ -148,13 +194,16 @@ $(function(){
 	});
 	//set savings goal and add to user account.  
 	$('.goalset').on('click', function(goalInfo){
-		console.log('zipcode:',$('.zipcode').val())
 		var goalInfo ={
 			goal:{
+				creditcard: $('.bankacctid').val(),
+				bank: $('.creditcard option:selected').text(),
+				bankuser: $('.bankusername').val(),
+				bankpass: $('.bankpassword').val(),
 				goaldate: $('.goaldate').val(),
 				goalbalance: $('.goalbalance').val(),
 				email: $('.email').val(),
-				zipcode: $('.zipcode').val(),
+				city: $('.city').val(),
 				debt: $('.yourdebt').val()
 
 			}
@@ -179,10 +228,10 @@ $(function(){
 	// 		$('.payoffdropdown').append('<option>'+dropDown+'</option>');
 	// 	}
 		//populate payoff percent immediately for default selection in payoff dropdown	
-	var name = $('.payoffdropdown').val();
-	$.post('/percent', {name: name}, function(percent){
-		$('.percentdebt').val(percent.payoffpercent)
-	})
+	// var name = $('.payoffdropdown').val();
+	// $.post('/percent', {name: name}, function(percent){
+	// 	$('.percentdebt').val(percent.payoffpercent)
+	// })
 
 	
 	//update payoff percent if percentage entered changes
