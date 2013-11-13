@@ -43,6 +43,7 @@ if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
 moment().format();
+var MONGOLAB_URI= "mongodb://heroku_app19438054:if2uam2ravct3umhaiehpuim8n@ds053838.mongolab.com:53838/heroku_app19438054"
 var mongo = process.env.MONGOLAB_URI || 'mongodb://localhost/saveyourself'
 mongoose.connect(mongo);
 
