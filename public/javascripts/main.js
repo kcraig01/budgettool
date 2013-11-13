@@ -1,4 +1,28 @@
 $(function(){
+	
+	 $('#chart').highcharts({
+        chart: {
+            type: 'bar'
+        },
+        title: {
+            text: 'Fruit Consumption'
+        },
+        xAxis: {
+            categories: ['Apples', 'Bananas', 'Oranges']
+        },
+        yAxis: {
+            title: {
+                text: 'Fruit eaten'
+            }
+        },
+        series: [{
+            name: 'Jane',
+            data: [1, 0, 4]
+        }, {
+            name: 'John',
+            data: [5, 7, 3]
+        }]
+    });
 //SideBuy API 
 
 	//select to enter new goal - displays goal entry form 
@@ -9,6 +33,7 @@ $(function(){
 		$('.newgoal').hide()
 		$('.checkgoal').hide()
 		$('.postGoal').hide()
+		$('.jumbotron').hide()
 	})
 	//user can view past goal and see if they have achieved it
 	//returns goal data and current balance
@@ -18,7 +43,9 @@ $(function(){
 				console.log(pastgoal.goals.length);
 				if (pastgoal.goals.length>0){
 					for (var i=0; i<pastgoal.goals.length; i++){
+					$('.jumbotron').hide()
 					$('.pastGoal').show()
+					$('.goalfail').hide()
 					$('.newgoal').hide()
 					$('.checkgoal').hide()
 					$('.deals').hide()
@@ -70,25 +97,32 @@ $(function(){
 		var that = $(this);
 		var statementdate = {
 			dateend: dateend,
-			bank: bank
+			bank: bank,
+			newbal: newbal
 		}
 		console.log(startdate)
 		console.log(dateend)
 		$.post('/checkgoalbalance',{statementdate: statementdate}, function(matchbalance){
-			console.log(matchbalance[0].BALAMT)
-			var actualbalance = Math.abs(matchbalance[0].BALAMT)
+			console.log(matchbalance[0].balance.BALAMT)
+			var actualbalance = Math.abs(matchbalance[0].balance.BALAMT)
 			var goalrembalance = Number(parent.find('.goalrembalance').val())
+			var enteredcity = matchbalance[0].city
 			console.log(actualbalance)
 			console.log(goalrembalance)
 			//if statement balance does not equal goal, no deals 
-			if (actualbalance >= goalrembalance){
+			if (actualbalance > goalrembalance){
 				console.log('bad!')
+
+				$('.goalfail').show()
+				$('.listgoals').hide()
+				$('.deals').hide()
 			}
 			//if goal is met - show deals 
 				else {
 				console.log("woohoo!!!")
 				$('.deals').show()
 				$('.listgoals').hide()
+				$('.goalfail').hide()
 
 					var api_key = '8c390e2e8545cb67facb5b45cea0c3fd';
 					var city = 'new-york';// Set Location
@@ -169,8 +203,9 @@ $(function(){
 			if (acctdata ==='ERROR'){
 				console.log('make an error message')
 			}
-			else 
+			else {
 				console.log(acctdata[0].BALAMT);
+			
 			//set debt equal to value returned from credit card statement
 				var debt = Math.abs(acctdata[0].BALAMT);
 				$('.yourdebt').val(debt);
@@ -190,6 +225,7 @@ $(function(){
 				var savings = (debt - goalBudget)
 				var roundedsavings = Math.round(savings*100)/100
 				$('.goalbalance').val(roundedsavings)
+			}
 		})
 	});
 	//set savings goal and add to user account.  
@@ -210,7 +246,7 @@ $(function(){
 		}
 		//after goal set, save in DB and direct user to thank you page. (maybe charts)
 		$.post('/goaldata', {goalInfo: goalInfo}, function(goalInfo){
-			console.log(goalInfo.goals)
+			console.log("goal stuff:", goalInfo.goals)
 			$('.postGoal').show()
 			$('.budgetEntry').hide()
 
@@ -279,6 +315,7 @@ $(function(){
 		var password = $('.bankpassword').val("");
 		var acctnum = $('.bankacctid').val("");
 	});
+
 
 
 	//set dropdown values equal to categories from database. May use this for budget suggestions

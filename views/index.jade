@@ -2,11 +2,13 @@ doctype 5
 html
 	head
 		title= title
-		link(rel='stylesheet', href='/stylesheets/style.css')
+	
 	body
 		block content
 		link(rel="stylesheet", href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css")
-		link(rel="stylesheet", href="/stylesheets/bootstrap.min.css")
+		link(rel="stylesheet", href="//netdna.bootstrapcdn.com/bootswatch/3.0.1/flatly/bootstrap.min.css")
+		link(rel='stylesheet', href='/stylesheets/style.css')
+		link(rel='stylesheet', href='/stylesheets/test.css')	
 		script(src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js")
 		script(src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js")
 		script(src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js")
@@ -19,64 +21,53 @@ html
 				span.icon-bar
 				span.icon-bar
 				span.icon-bar
-			a.navbar-brand(href='#') Brand
+			a.navbar-brand(href='#') Save Yourself
 		.navbar-collapse.collapse.navbar-inverse-collapse
 			ul.nav.navbar-nav
 				li.active
-				a(href='#') Active
-				li
-				a(href='#') Link
+					a(href='/account') Home
 				li.dropdown
 					a.dropdown-toggle(href='#', data-toggle='dropdown')
-						| Dropdown
+						| Select Action 
 						b.caret
-						ul.dropdown-menu
-							li
-							a(href='#') Action
-							li
-							a(href='#') Another action
-							li
-							a(href='#') Something else here
-							li.divider
-							li.dropdown-header Dropdown header
-							li
-							a(href='#') Separated link
-							li
-							a(href='#') One more separated link
-			form.navbar-form.navbar-left
-				input.form-control.col-lg-8(type='text', placeholder='Search')
+					ul.dropdown-menu
+						li
+							a(href='#') Create Goal
+						li
+							a(href='#') Check Goals 
 			ul.nav.navbar-nav.navbar-right
 				li
-				a(href='#') Link
-				li.dropdown
-				a.dropdown-toggle(href='#', data-toggle='dropdown')
-					| Dropdown
-					b.caret
-					ul.dropdown-menu
-					li
-					a(href='#') Action
-					li
-					a(href='#') Another action
-					li
-					a(href='#') Something else here
-					li.divider
-					li
-					a(href='#') Separated link
+					a(href='/logout') Logout
+				//- li.dropdown
+				//- a.dropdown-toggle(href='#', data-toggle='dropdown')
+				//- 	| Dropdown
+				//- 	b.caret
+				//- 	ul.dropdown-menu
+				//- 	li
+				//- 	a(href='#') Action
+				//- 	li
+				//- 	a(href='#') Another action
+				//- 	li
+				//- 	a(href='#') Something else here
+				//- 	li.divider
+				//- 	li
+				//- 	a(href='#') Separated link
 
-
+blockquote
 	.container 
-		h1 Save Yourself
-		.userLogin
-		a(href="/") Go home
-		br
-		a(href="/logout").button.text-center.logout(type='button', class='btn btn-primary btn-sm') Logout
-		h5.col-md-12 You are logged in.
-
-		.actionbuttons
-			.button.col-md-3.col-md-offset-3.newgoal(type='button', class='btn btn-success btn-lg') Set New Savings Goal
-			.button.col-md-3.checkgoal(type='button', class='btn btn-info btn-lg') Check Past Savings Goals
-
-		
+		row
+			.col-lg-12
+				.page-header
+					h1#container Test Text
+				.mainpage
+					.jumbotron
+						h1 Save Yourself
+						p This is some text about my app
+		row.col-md-12.text-center.text-primary 
+			.input-group.input-group-md.col-md-offset-2
+				.button.newgoal.text-center(type='button', class='btn btn-success btn-lg') Set New Savings Goal
+				.button.checkgoal.text-center(type='button', class='btn btn-info btn-lg') Check Past Savings Goals
+	
 
 		.budgetEntry
 			.panel-group#accordian
@@ -109,26 +100,22 @@ html
 							.input-group.input-group-md.acctid
 								span.input-group-addon Email  
 								input.email.form-control(name="email", type = "email", placeholder="EmailAddress")
-							.input-group.input-group-md.city
+							.input-group.input-group-md.other
 								span.input-group-addon City
 								input.city.form-control(name="city", type = "text", placeholder="zip")			
 							.button.acctsubmit(type='button', class='btn btn-primary') Submit
 				.personalDebt
 					//- row.col-md-3.col-md-offset-2.text-center.text-primary Enter your monthly Income
-					row.col-md-4.col-md-offset-4.text-center.text-primary
+					row.col-md-6.col-md-offset-3.text-center.text-primary
 						.input-group.input-group-lg
 								span.input-group-addon Credit Card Debt: 
 								input.yourdebt.form-control(name="debt", type = "text", placeholder="DEBT")
 				.personalIncome
 					//- row.col-md-3.col-md-offset-2.text-center.text-primary Enter your monthly Income
-					row.col-md-4.col-md-offset-4.text-center.text-primary
+					row.col-md-6.col-md-offset-3.text-center.text-primary
 						.input-group.input-group-lg
 								span.input-group-addon Monthly income
 								input.income.form-control(name="budget", type = "text", placeholder="Budget")
-
-			//- .category
-			//- 	row.col-md-3.col-md-offset-2.text-center.text-primary How much can you pay off?
-			//- 		select.form-control.payoffdropdown 
 			.percent
 				row.col-md-3.col-md-offset-3.text-center.text-primary
 					.input-group.input-group-md
@@ -146,37 +133,18 @@ html
 			row.col-md-3.col-md-offset-1.text-center.text-primary 
 				.input-group.input-group-md
 						span.input-group-addon Goal Balance 
-						input.col-md-2.goalbalance.form-control(name="budget", type = "text", placeholder="Amt Saved")
-			.button.col-md-6.col-md-offset-3.goalset(type='button', class='btn btn-danger') Set Goal
-			row.col-md-3.col-md-offset-2.text-center.text-primary  Did you reach your goal??
-				input.col-md-3.goalsave.form-control(name="budget", type = "text", placeholder="Yes/No")
+						input.col-md-3.goalbalance.form-control(name="budget", type = "text", placeholder="Amt Saved")
+			row.setgoalbutton
+				.col-md-4
+				.button.col-md-4.goalset(type='button', class='btn btn-danger') Set Goal
 
 
 		.pastGoal
 			.listgoals
 			.deals#deals
 				p Congratulations! You have reached your goal! Go ahead, treat yourself. Take a look at some small rewards for your smart spending.
-			//- row.col-md-3.text-center.text-primary
-			//- 	.input-group.input-group-md
-			//- 			span.input-group-addon On 
-			//- 			input.goalsetdate.form-control(name="budget", type = "date", placeholder="Date")
-			//- row.col-md-3.text-center.text-primary 
-			//- 	.input-group.input-group-md
-			//- 			span.input-group-addon Your Debt Was: 
-			//- 			input.col-md-2.pastbalance.form-control(name="budget", type = "text", placeholder="Amt Saved")
-			//- row.col-md-3.text-center.text-primary
-			//- 	.input-group.input-group-md
-			//- 			span.input-group-addon Goal Date: 
-			//- 			input.goaldate.form-control(name="budget", type = "date", placeholder="Date")
-			//- row.col-md-3.text-center.text-primary 
-			//- 	.input-group.input-group-md
-			//- 			span.input-group-addon Goal Balance: 
-			//- 			input.col-md-2.goalrembalance.form-control(name="budget", type = "text", placeholder="Amt Saved")
-			//- row.col-md-3.text-center.text-primary 
-			//- 	.input-group.input-group-md
-			//- 			span.input-group-addon Actual Balance: 
-			//- 			input.col-md-2.actualbalance.form-control(name="budget", type = "text", placeholder="Amt Saved")
-			//- .button.col-md-6.col-md-offset-3.goalset(type='button', class='btn btn-danger') Did you reach your goal?
+			.goalfail
+				p Sad face - you didn't reach your goal. Here are some resources to help with your budget planning:
 			.goalreached
 				p
 			//- .pastDebt 
@@ -198,8 +166,14 @@ html
 
 		.postGoal
 			p Thanks for entering your goal!! Come back to check if you've met it and receive rewards!	
-
+			.chart#chart
 
 		.deals#deals
+		
+	footer
+		row
+			.col-lg-12
+				p Made by 
+				p 
 
 

@@ -140,32 +140,8 @@ app.get('/load', function(req, res){
 
 		res.send(data)
 });
-	// for (var products in Product){
-	// 	var productItem = Products.find(products);
-	// 	console.log(productItem)
-	// 	productList.push(productItem);
-	// }
-	// // console.log(productList)
-	// res.send(productList)
 
 });
-
-
-// var bankInfo = {
-//     fid: config.account.fid
-//   , fidorg: config.account.fidorg
-//   , url: config.account.url
-//   , bankid: config.account.bankid
-//   , user: config.account.user
-//   , pass: config.account.pass
-//   , accid: config.account.accid
-//   , acctype: config.account.acctype /* CHECKING || SAVINGS || MONEYMRKT || CREDITCARD */
-//   , date_start: 20130930 /* Statement start date YYYYMMDDHHMMSS */
-//   , date_end: 20131021 /* Statement end date YYYYMMDDHHMMSS */
-// };
-
-//If second param is omitted JSON will be returned by default
-
 
 
 //update user account db record after user adds login and cc info	
@@ -229,16 +205,17 @@ app.post('/acctdata', function (req, response){
 				console.log(fetchstatement.fullbankdata)
 				var debtBalance =[]
 				banking.getStatement(fetchstatement.fullbankdata,function(res, err){
-				    if(err) console.log(err)
+				    if(err) {console.log(err)}
 			   		else if (res.OFX.SIGNONMSGSRSV1.SONRS.STATUS.SEVERITY === 'ERROR'){
 			   			console.log('here')
 			   			response.send(res.OFX.SIGNONMSGSRSV1.SONRS.STATUS.SEVERITY )
 					 }
-				   	else 
+				   	else {
 					    console.log(res.OFX.CREDITCARDMSGSRSV1.CCSTMTTRNRS.CCSTMTRS.LEDGERBAL)
 						var cardBalance = res.OFX.CREDITCARDMSGSRSV1.CCSTMTTRNRS.CCSTMTRS.LEDGERBAL
 						debtBalance.push(cardBalance);
 						response.send(debtBalance)
+					}
 				});	
 			}
 		})
@@ -337,6 +314,7 @@ app.post('/checkgoalbalance', function(req, response){
 	var formatone = dateend.replace('-','')
 	var formatdateend = formatone.replace('-','')
 	var formatedatestart = formatdateend - 100
+	//determine which goal user has selected and retrieve statement for that bank
 		Bank.findOne({name: req.body.statementdate.bank}, function (err, res){
 		if (err){
 			console.log(err);
@@ -352,39 +330,47 @@ app.post('/checkgoalbalance', function(req, response){
 			}
 			else{
 				console.log("match:", match[0].goaldetails)
+				var goals = match[0].goaldetails
+				var matchedgoal =[]
+				for (var i = 0; i <goals.length; i++){
+					if (goals[i].goalbalance === req.body.statementdate.newbal){
+						matchedgoal.push(goals[i])
+						console.log("this is the matching goal:", matchedgoal)
+					}
+				}
 				var fetchstatement ={
 					fullbankdata:{
 						fid:res.fid,
 						fidorg: res.fidorg,
 						url: res.url,
 						bankid: null,
-						user: match[0].bankuser,
-						pass: match[0].bankpass,
-						accid: match[0].creditcard,
+						user: matchedgoal[0].bankuser,
+						pass: matchedgoal[0].bankpass,
+						accid: matchedgoal[0].creditcard,
 						acctype: 'CREDITCARD',
 						date_start: formatedatestart, /* Statement start date YYYYMMDDHHMMSS */
 	  					date_end: formatdateend/* Statement end date YYYYMMDDHHMMSS */
 					}
 				}
+				//send remaining balance back to client to match against goal
 				console.log(fetchstatement.fullbankdata)
 				var debtBalance =[]
 				banking.getStatement(fetchstatement.fullbankdata,function(res, err){
-				    if(err) console.log(err)
+				    if(err) {console.log(err)}
 			   		else if (res.OFX.SIGNONMSGSRSV1.SONRS.STATUS.SEVERITY === 'ERROR'){
 			   			console.log('here')
 			   			response.send(res.OFX.SIGNONMSGSRSV1.SONRS.STATUS.SEVERITY )
 					 }
-				   	else 
+				   	else {
 					    console.log(res.OFX.CREDITCARDMSGSRSV1.CCSTMTTRNRS.CCSTMTRS.LEDGERBAL)
-						var cardBalance = res.OFX.CREDITCARDMSGSRSV1.CCSTMTTRNRS.CCSTMTRS.LEDGERBAL
+						var cardBalance = {
+							balance: res.OFX.CREDITCARDMSGSRSV1.CCSTMTTRNRS.CCSTMTRS.LEDGERBAL, 
+							city: matchedgoal[0].city}
+						// debtBalance.push({city: matchedgoal[0].city})
 						debtBalance.push(cardBalance);
+						console.log(debtBalance)
 						response.send(debtBalance)
-					// 	app.get('/debtbalance', function(req, res){
-					// 	console.log('here')
-					// 	var newDebt = debtBalance
-					// 	console.log(newDebt)
-					// 	res.send(newDebt)
-					// })
+					}
 				});
 			}
 		});
