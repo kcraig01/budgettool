@@ -5,14 +5,14 @@ $(function(){
             type: 'bar'
         },
         title: {
-            text: 'Fruit Consumption'
+            text: 'There will be a chart here'
         },
         xAxis: {
-            categories: ['Apples', 'Bananas', 'Oranges']
+            categories: ['Debt', 'Utilities', 'Transportation']
         },
         yAxis: {
             title: {
-                text: 'Fruit eaten'
+                text: 'This will be a real chart soon'
             }
         },
         series: [{
