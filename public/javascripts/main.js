@@ -1,28 +1,6 @@
 $(function(){
 	
-	 $('#chart').highcharts({
-        chart: {
-            type: 'bar'
-        },
-        title: {
-            text: 'There will be a chart here'
-        },
-        xAxis: {
-            categories: ['Debt', 'Utilities', 'Transportation']
-        },
-        yAxis: {
-            title: {
-                text: 'This will be a real chart soon'
-            }
-        },
-        series: [{
-            name: 'Jane',
-            data: [1, 0, 4]
-        }, {
-            name: 'John',
-            data: [5, 7, 3]
-        }]
-    });
+
 //SideBuy API 
 
 	//select to enter new goal - displays goal entry form 
@@ -240,8 +218,10 @@ $(function(){
 				goalbalance: $('.goalbalance').val(),
 				email: $('.email').val(),
 				city: $('.city').val(),
-				debt: $('.yourdebt').val()
-
+				debt: $('.yourdebt').val(),
+				income: $('.incomeEntry').val(),
+				payoff: $('.payoffgoal').val(),
+				percentsave: $('.percentdebt').val()
 			}
 		}
 		//after goal set, save in DB and direct user to thank you page. (maybe charts)
@@ -249,11 +229,192 @@ $(function(){
 			console.log("goal stuff:", goalInfo)
 			$('.postGoal').show()
 			$('.budgetEntry').hide()
-
+			var totalbudget = Number(goalInfo.goal.income)
+			var percentsave = Number(goalInfo.goal.percentsave)
+			var payoffamt = Number(goalInfo.goal.payoff)
+			if (percentsave > 15){
+				var changeamt = percentsave - 15;
+				var housing = .0035*changeamt;
+				var savings = .001*changeamt;
+				var livingexp =.0025*changeamt;
+				var transportation = .1005*changeamt
+					Highcharts.getOptions().colors = Highcharts.map(Highcharts.getOptions().colors, function(color) {
+					    return {
+					        radialGradient: { cx: 0.5, cy: 0.3, r: 0.7 },
+					        stops: [
+					            [0, color],
+					            [1, Highcharts.Color(color).brighten(-0.3).get('rgb')] // darken
+					        ]
+					    };
+					});
+					var rembalance = totalbudget - payoffamt
+					console.log("remainingbalance", rembalance)
+					// Build the chart
+			        $('#chart').highcharts({
+			        	
+			            chart: {
+			                plotBackgroundColor: null,
+			                plotBorderWidth: null,
+			                plotShadow: false
+			            },
+			            title: {
+			                text: 'Suggested Budget Based on Your Goals'
+			            },
+			            // tooltip: {
+			        	   //  pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+			            // },
+			            plotOptions: {
+			                pie: {
+			                    allowPointSelect: true,
+			                    cursor: 'pointer',
+			                    dataLabels: {
+			                        enabled: true,
+			                        color: '#000000',
+			                        connectorColor: '#000000',
+			                        formatter: function() {
+			                            return '<b>'+ this.point.name +'</b>: '+ this.y;
+			                        }
+			                    }
+			                }
+			            },
+			            series: [{
+			                type: 'pie',
+			                name: 'Suggested Budget',
+			                data: [
+			                    ['Housing',   totalbudget*(0.35-housing)],
+			                    ['Savings',    totalbudget*(0.1-savings)],
+			                    ['Living Expenses', totalbudget*(0.25-livingexp)],
+			                    ['Transportation', totalbudget*(0.15-transportation)],
+			                    ['Debt',   payoffamt]
+			                ]
+			            }]
+			        });
+				}
+			  
 			
+			
+			console.log("Payoff:", payoffamt)
+			console.log("budget:",totalbudget)
 
-		})
+		   	// Radialize the colors
+		   	if (percentsave = 15){
+				Highcharts.getOptions().colors = Highcharts.map(Highcharts.getOptions().colors, function(color) {
+				    return {
+				        radialGradient: { cx: 0.5, cy: 0.3, r: 0.7 },
+				        stops: [
+				            [0, color],
+				            [1, Highcharts.Color(color).brighten(-0.3).get('rgb')] // darken
+				        ]
+				    };
+				});
+				var rembalance = totalbudget - payoffamt
+				console.log("remainingbalance", rembalance)
+				// Build the chart
+		        $('#chart').highcharts({
+		        	
+		            chart: {
+		                plotBackgroundColor: null,
+		                plotBorderWidth: null,
+		                plotShadow: false
+		            },
+		            title: {
+		                text: 'Suggested Budget Based on Your Goals'
+		            },
+		            // tooltip: {
+		        	   //  pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+		            // },
+		            plotOptions: {
+		                pie: {
+		                    allowPointSelect: true,
+		                    cursor: 'pointer',
+		                    dataLabels: {
+		                        enabled: true,
+		                        color: '#000000',
+		                        connectorColor: '#000000',
+		                        formatter: function() {
+		                            return '<b>'+ this.point.name +'</b>: '+ this.y;
+		                        }
+		                    }
+		                }
+		            },
+		            series: [{
+		                type: 'pie',
+		                name: 'Suggested Budget',
+		                data: [
+		                    ['Housing',   totalbudget*0.35],
+		                    ['Savings',    totalbudget*0.1],
+		                    ['Living Expenses', totalbudget*0.25],
+		                    ['Transportation', totalbudget*0.15],
+		                    ['Debt',   payoffamt]
+		                ]
+		            }]
+		        });
+			}
+				
+		
+			
+			if (percentsave < 15){
+				var changeamt = 15 - percentsave;
+						var housing = .0035*changeamt;
+						var savings = .001*changeamt;
+						var livingexp =.0025*changeamt;
+						var transportation = .1005*changeamt
+
+				Highcharts.getOptions().colors = Highcharts.map(Highcharts.getOptions().colors, function(color) {
+				    return {
+				        radialGradient: { cx: 0.5, cy: 0.3, r: 0.7 },
+				        stops: [
+				            [0, color],
+				            [1, Highcharts.Color(color).brighten(-0.3).get('rgb')] // darken
+				        ]
+				    };
+				});
+				var rembalance = totalbudget - payoffamt
+				console.log("remainingbalance", rembalance)
+				// Build the chart
+		        $('#chart').highcharts({
+		        	
+		            chart: {
+		                plotBackgroundColor: null,
+		                plotBorderWidth: null,
+		                plotShadow: false
+		            },
+		            title: {
+		                text: 'Suggested Budget Based on Your Goals'
+		            },
+		            // tooltip: {
+		        	   //  pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+		            // },
+		            plotOptions: {
+		                pie: {
+		                    allowPointSelect: true,
+		                    cursor: 'pointer',
+		                    dataLabels: {
+		                        enabled: true,
+		                        color: '#000000',
+		                        connectorColor: '#000000',
+		                        formatter: function() {
+		                            return '<b>'+ this.point.name +'</b>: '+ this.y;
+		                        }
+		                    }
+		                }
+		            },
+		           			series: [{
+			                type: 'pie',
+			                name: 'Suggested Budget',
+			                data: [
+			                    ['Housing',   totalbudget*(0.35+housing)],
+			                    ['Savings',    totalbudget*(0.1+savings)],
+			                    ['Living Expenses', totalbudget*(0.25+livingexp)],
+			                    ['Transportation', totalbudget*(0.15+transportation)],
+			                    ['Debt',   payoffamt]
+			                ]
+		            	}]
+		        });
+			}	
+  		});
 	});
+    
 
 //set payoff options from info in database 
 	// $.get('/payoff', function(payoff){

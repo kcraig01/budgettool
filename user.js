@@ -29,6 +29,9 @@ var goaldetails = new Schema({
   goaldate: Date,
   goalbalance: Number,
   actualbalance: Number,
+  income: Number,
+  payoffamt: Number,
+  percentsave: Number, 
   city: String
 });
 

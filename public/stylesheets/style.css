@@ -46,3 +46,7 @@ display: none;
 	margin-left: auto;
 	margin-right:;
 }
+.chart{
+	min-width: 310px; 
+	height: 400px;
+}

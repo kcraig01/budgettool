@@ -253,6 +253,9 @@ app.post('/goaldata', function(req, res){
 	var bankuser = req.body.goalInfo.goal.bankuser
 	var bankpass = req.body.goalInfo.goal.bankpass
 	var userID = req.user._id
+	var income = req.body.goalInfo.goal.income
+	var percentsave = req.body.goalInfo.goal.percentsave
+	var payoffamt = req.body.goalInfo.goal.payoffamt
 	console.log(userID)
 		// UserLogin.update({_id: userID}, 
   //           {
@@ -278,7 +281,10 @@ app.post('/goaldata', function(req, res){
 				goalbalance: goalbalance,
 				dategoalset: today,
 				email: email,
-				city: city
+				city: city,
+				percentsave: percentsave,
+				payoffamt: payoffamt,
+				budget: income
 				}
 			}
 			},
@@ -300,7 +306,7 @@ app.post('/goaldata', function(req, res){
 		}
 		else{
 			console.log("user:",user)
-			res.send("success")
+			res.send(req.body.goalInfo)
 		}
 	})
 
@@ -312,7 +318,7 @@ app.post('/checkgoalbalance', function(req, response){
 	console.log(req.user.goaldetails)
 	console.log("this should be user data:",req.user);
 	var dateend = req.body.statementdate.dateend
-	console.log("bank", dateend)
+	console.log("dateend", dateend)
 	var formatone = dateend.replace('-','')
 	var formatdateend = formatone.replace('-','')
 	var formatedatestart = formatdateend - 100
