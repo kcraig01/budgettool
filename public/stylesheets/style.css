@@ -33,6 +33,7 @@ display: none;
 	white-space: normal;
 	font-size:36px;
 	vertical-align: middle;
+	display: table-cell;
 }
 .newgoal{
 	margin-right:25px;
