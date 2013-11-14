@@ -246,7 +246,7 @@ $(function(){
 		}
 		//after goal set, save in DB and direct user to thank you page. (maybe charts)
 		$.post('/goaldata', {goalInfo: goalInfo}, function(goalInfo){
-			console.log("goal stuff:", goalInfo.goals)
+			console.log("goal stuff:", goalInfo)
 			$('.postGoal').show()
 			$('.budgetEntry').hide()
 
