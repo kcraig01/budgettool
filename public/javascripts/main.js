@@ -130,10 +130,6 @@ $(function(){
 							}
 						}		
 					})
-			// //if goal is not met, show budgeting suggestions
-			// else {
-			// 	console.log("bad!!")
-			// }
 			
 			}
 		});
@@ -161,7 +157,6 @@ $(function(){
 		$.post('/acctdata', {acctdata: acctdata}, function(acctdata){
 			console.log(acctdata);
 			if (acctdata ==='ERROR'){
-				console.log('make an error message')
 				alert("The username or password you entered are incorrect. Please verify and re-submit.")
 			}
 			else {
