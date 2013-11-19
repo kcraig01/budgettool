@@ -69,9 +69,9 @@ $(function(){
 		var savings = olddebt - newbal
 		var roundedsavings = Math.round(savings*100)/100
 		var that = $(this);
-		var username = $('.bankusername').val();
-		var password = $('.bankpassword').val();
-		var acctnum = $('.bankacctid').val();
+		var username = $('.bankusername2').val();
+		var password = $('.bankpassword2').val();
+		var acctnum = $('.bankacctid2').val();
 		var statementdate = {
 			username: username,
 			password: password,
