@@ -83,14 +83,14 @@ $(function(){
 		console.log(startdate)
 		console.log(dateend)
 		$.post('/checkgoalbalance',{statementdate: statementdate}, function(matchbalance){
-			console.log(matchbalance[0].balance.BALAMT)
 			var actualbalance = Math.abs(matchbalance[0].balance.BALAMT)
 			var goalrembalance = Number(parent.find('.goalrembalance').val())
 			var enteredcity = matchbalance[0].city
-			console.log(actualbalance)
-			console.log(goalrembalance)
 			//if statement balance does not equal goal, no deals 
-			if (actualbalance > goalrembalance){
+			if (matchbalance ==='ERROR'){
+				alert("The username or password you entered are incorrect. Please verify and re-submit.")
+			}
+				else if (actualbalance > goalrembalance){
 				console.log('bad!')
 
 				$('.goalfail').show()
@@ -98,41 +98,41 @@ $(function(){
 				$('.deals').hide()
 			}
 			//if goal is met - show deals 
-				else {
-				console.log("woohoo!!!")
-				$('.deals').show()
-				$('.budgetEntry').hide()
-				$('.panel-group').hide()
-				$('.listgoals').hide()
-				$('.goalfail').hide()
+					else {
+					console.log("woohoo!!!")
+					$('.deals').show()
+					$('.budgetEntry').hide()
+					$('.panel-group').hide()
+					$('.listgoals').hide()
+					$('.goalfail').hide()
 
-					var api_key = '8c390e2e8545cb67facb5b45cea0c3fd';
-					var city = 'new-york';// Set Location
-					var limit = '0-30';
-					var sort = 'price|1';
+						var api_key = '8c390e2e8545cb67facb5b45cea0c3fd';
+						var city = 'new-york';// Set Location
+						var limit = '0-30';
+						var sort = 'price|1';
 
-					$.ajax({
-						url : 'http://v1.sidebuy.com/api/get/'+api_key+'/?'+'city='+city+'&limit='+limit+'&sort='+sort,
-						cache : true,
-						dataType : 'jsonp',
-						success : function(data){
-							console.log(data)
-							var dealarray = []
-							//only display deals that are less than the savings the user has made
-							for (var i = 0; i < data.length; i++) {
-								console.log(roundedsavings)
-								if (data[i].price<= 30){
-									dealarray.push(data[i])
+						$.ajax({
+							url : 'http://v1.sidebuy.com/api/get/'+api_key+'/?'+'city='+city+'&limit='+limit+'&sort='+sort,
+							cache : true,
+							dataType : 'jsonp',
+							success : function(data){
+								console.log(data)
+								var dealarray = []
+								//only display deals that are less than the savings the user has made
+								for (var i = 0; i < data.length; i++) {
+									console.log(roundedsavings)
+									if (data[i].price<= 30){
+										dealarray.push(data[i])
+									}
 								}
-							}
-							//append deals to page 
-							for (var i = 0; i < dealarray.length; i++) {
-								console.log('here')
-							    $('#deals').append('<li><a href="'+dealarray[i]['link']+'">$'+dealarray[i]['price']+": "+dealarray[i]['title']+'</li>');
-							}
-						}		
-					})
-			
+								//append deals to page 
+								for (var i = 0; i < dealarray.length; i++) {
+									console.log('here')
+								    $('#deals').append('<li><a href="'+dealarray[i]['link']+'">$'+dealarray[i]['price']+": "+dealarray[i]['title']+'</li>');
+								}
+							}		
+						})
+				
 			}
 		});
 	});
@@ -204,7 +204,7 @@ $(function(){
 				percentsave: $('.percentdebt').val()
 			}
 		}
-		//after goal set, save in DB and direct user to thank you page. (maybe charts)
+		//after goal set, save in DB and direct user to thank you page. Create chart based on users goal
 		$.post('/goaldata', {goalInfo: goalInfo}, function(goalInfo){
 			console.log("goal stuff:", goalInfo)
 			$('.postGoal').show()

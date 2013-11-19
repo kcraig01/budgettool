@@ -335,7 +335,8 @@ app.post('/checkgoalbalance', function(req, response){
 				console.log(fetchstatement.fullbankdata)
 				var debtBalance =[]
 				banking.getStatement(fetchstatement.fullbankdata,function(res, err){
-				    if(err) {console.log(err)}
+				    if(err) {console.log(err);
+				    	response.send("error")}
 			   		else if (res.OFX.SIGNONMSGSRSV1.SONRS.STATUS.SEVERITY === 'ERROR'){
 			   			console.log('here')
 			   			response.send(res.OFX.SIGNONMSGSRSV1.SONRS.STATUS.SEVERITY )
