@@ -288,12 +288,8 @@ app.post('/goaldata', function(req, res){
 });
 //user returns to check if they've met goal 
 app.post('/checkgoalbalance', function(req, response){
-	console.log(req.user);
-	console.log("sent:",req.body)
 	console.log(req.user.goaldetails)
-	console.log("this should be user data:",req.user);
 	var dateend = req.body.statementdate.dateend
-	console.log("dateend", dateend)
 	var formatone = dateend.replace('-','')
 	var formatdateend = formatone.replace('-','')
 	var formatedatestart = formatdateend - 100
@@ -351,7 +347,6 @@ app.post('/checkgoalbalance', function(req, response){
 							city: matchedgoal[0].city}
 						// debtBalance.push({city: matchedgoal[0].city})
 						debtBalance.push(cardBalance);
-						console.log(debtBalance)
 						response.send(debtBalance)
 					}
 				});
