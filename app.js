@@ -165,15 +165,14 @@ app.post('/acctdata', function (req, response){
 	UserLogin.update({_id: userID}, 
 		{
 			$set: {
-				creditcard: userData.acctnum, 
-				bankuser: userData.username,
-				bankpass: userData.password,
+				// creditcard: userData.acctnum, 
+				// bankuser: userData.username,
+				// bankpass: userData.password,
 				income: userData.income,
 				bank: userData.bank,
 				city: userData.city,
 				currentDate: today
-				}
-		
+				}		
 		},
 	function (err, user){
 		if (err){
@@ -196,9 +195,9 @@ app.post('/acctdata', function (req, response){
 					fidorg: res.fidorg,
 					url: res.url,
 					bankid: null,
-					user: userData.username,
-					pass: userData.password,
-					accid: userData.acctnum,
+					user: req.body.acctdata.acct.username,
+					pass: req.body.acctdata.acct.password,
+					accid: req.body.acctdata.acct.acctnum,
 					acctype: 'CREDITCARD',
 					date_start: laststatement, /* Statement start date YYYYMMDDHHMMSS */
   					date_end: today /* Statement end date YYYYMMDDHHMMSS */
@@ -225,7 +224,6 @@ app.post('/acctdata', function (req, response){
 
 //user view past goal - return users goal data and run current check
 app.post('/pastgoal', function (req, res){
-	console.log("does this work?",req.body)
 	var userID = req.user._id
 	console.log("user:",req.user)
 	UserLogin.findOne({_id: userID}, function (err, user){
@@ -239,9 +237,8 @@ app.post('/pastgoal', function (req, res){
 	});
 
 	});
-//set interval to run the bank account checker to see if goal dates == todays date
+//after goal set- user db record updated
 app.post('/goaldata', function(req, res){
-	console.log("does this work?",req.body.goalInfo)
 	var today = new Date();
 	var goaldate = req.body.goalInfo.goal.goaldate
 	var goalbalance = req.body.goalInfo.goal.goalbalance
@@ -257,26 +254,15 @@ app.post('/goaldata', function(req, res){
 	var percentsave = req.body.goalInfo.goal.percentsave
 	var payoffamt = req.body.goalInfo.goal.payoffamt
 	console.log(userID)
-		// UserLogin.update({_id: userID}, 
-  //           {
-  //                   $push: {goaldetails: {
-  //                           goaldate: goaldate, 
-  //                           goalbalance: goalbalance,
-  //                           dategoalset: today,
-  //                           email: email,
-  //                           city: city,
-  //                           currentbalance: debt
-  //                           }
-  //                   }
-  //                   },
+
     UserLogin.update({_id: userID}, 
 		{
 			$push: {goaldetails: {
 				currentbalance: debt,
 				bank: bank,
-				creditcard: creditcard,
-				bankuser: bankuser,
-				bankpass: bankpass,
+				// creditcard: creditcard,
+				// bankuser: bankuser,
+				// bankpass: bankpass,
 				goaldate: goaldate, 
 				goalbalance: goalbalance,
 				dategoalset: today,
@@ -288,18 +274,7 @@ app.post('/goaldata', function(req, res){
 				}
 			}
 			},
-	// UserLogin.update({_id: userID}, 
-	// 	{
-	// 		$set: {goaldetails: {
-	// 			goaldate: goaldate, 
-	// 			goalbalance: goalbalance,
-	// 			dategoalset: today,
-	// 			email: email,
-	// 			city: city,
-	// 			currentbalance: debt
-	// 			}
-	// 		}
-	// 		},
+
 	function (err, user){
 		if (err){
 			console.log("err:",err);
@@ -352,9 +327,9 @@ app.post('/checkgoalbalance', function(req, response){
 						fidorg: res.fidorg,
 						url: res.url,
 						bankid: null,
-						user: matchedgoal[0].bankuser,
-						pass: matchedgoal[0].bankpass,
-						accid: matchedgoal[0].creditcard,
+						user: req.body.statementdate.bankuser,
+						pass: req.body.statementdate.bankpass,
+						accid: req.body.statementdate.creditcard,
 						acctype: 'CREDITCARD',
 						date_start: formatedatestart, /* Statement start date YYYYMMDDHHMMSS */
 	  					date_end: formatdateend/* Statement end date YYYYMMDDHHMMSS */

@@ -59,7 +59,6 @@ $(function(){
 	})
 //when user selects goal to verify, send dates to server to retrieve statement
 	$(document).on('click','.balancegoalcheck', function(){
-		console.log('here')
 		var parent = $(this).parent('.goalgrouping')
 		console.log("parent",parent)
 		var dateend = parent.find('.goaldate').val();
@@ -67,13 +66,16 @@ $(function(){
 		var olddebt = parent.find('.pastbalance').val();
 		var newbal = parent.find('.goalrembalance').val();
 		var bank = parent.find('.card').val();
-		console.log(bank)
 		var savings = olddebt - newbal
 		var roundedsavings = Math.round(savings*100)/100
-		console.log("savings:",savings)
-		console.log($(this).siblings(".goaldate"))
 		var that = $(this);
+		var username = $('.bankusername').val();
+		var password = $('.bankpassword').val();
+		var acctnum = $('.bankacctid').val();
 		var statementdate = {
+			username: username,
+			password: password,
+			acctnum: acctnum,
 			dateend: dateend,
 			bank: bank,
 			newbal: newbal
@@ -137,26 +139,6 @@ $(function(){
 		});
 	});
 	
-	// $.get('/load', function(categories){
-		// $('.percentdebt').on('keyup', function(e){
-		// 	$el = $(this);
-		// 	if(e.which ===13){
-		// 		var currentSpend = $el.val()
-		// 		console.log(currentSpend)
-		// 		var percentGoal = ($('.percentbudget').val()/100);
-		// 		console.log(percentGoal)
-		// 		var monthlyIncome = $('.income').val()
-		// 		var percentIncome = (currentSpend/monthlyIncome)*100
-		// 		$('.percentIncome').val(percentIncome)
-		// 		var goalBudget = percentGoal*monthlyIncome
-		// 		console.log(goalBudget)
-		// 		$('.goalbudget').val(goalBudget)
-		// 		var savings = (currentSpend - goalBudget)
-		// 		$('.goalsave').val(savings)
-				
-		// 	}
-		// })
-	// });
 	//create object with values of account data entered. push to array acctInfo
 	$('.acctsubmit').on('click', function(acctInfo){
 		var acctInfo =[];
@@ -180,6 +162,7 @@ $(function(){
 			console.log(acctdata);
 			if (acctdata ==='ERROR'){
 				console.log('make an error message')
+				alert("The username or password you entered are incorrect. Please verify and re-submit.")
 			}
 			else {
 				console.log(acctdata[0].BALAMT);

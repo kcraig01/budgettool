@@ -140,6 +140,23 @@ blockquote
 
 
 		.pastGoal
+			.budgetEntry
+			.panel-group#accordian
+				.panel.panel-default.col-md-6.col-md-offset-3
+					.panel-heading
+						.panel-title
+							a(data-toggle="collapse" data-parent="#accordion" href="#collapseOne") Select to enter your account info
+					.panel-collapse.collapse#collapseOne
+						.panel-body 
+							.input-group.input-group-md.username
+								span.input-group-addon Bank account username:  
+								input.bankusername.form-control(name="username", type = "text", placeholder="Username")
+							.input-group.input-group-md.password
+								span.input-group-addon Bank account password:  
+								input.bankpassword.form-control(name="password", type = "password", placeholder="Password")	
+							.input-group.input-group-md.acctid
+								span.input-group-addon Credit Card #:  
+								input.bankacctid.form-control(name="password", type = "password", placeholder="Password")
 			.listgoals
 			.deals#deals
 				h3.text-center Congratulations! You have reached your goal! 
