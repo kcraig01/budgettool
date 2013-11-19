@@ -90,7 +90,13 @@ $(function(){
 			if (matchbalance ==='ERROR'){
 				alert("The username or password you entered are incorrect. Please verify and re-submit.")
 			}
-				else if (actualbalance > goalrembalance){
+				else {
+				var actualbalance = Math.abs(matchbalance[0].balance.BALAMT)
+				var goalrembalance = Number(parent.find('.goalrembalance').val())
+				var enteredcity = matchbalance[0].city
+				}
+
+			if (actualbalance > goalrembalance){
 				console.log('bad!')
 
 				$('.goalfail').show()
