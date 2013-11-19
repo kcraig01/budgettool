@@ -327,9 +327,9 @@ app.post('/checkgoalbalance', function(req, response){
 						fidorg: res.fidorg,
 						url: res.url,
 						bankid: null,
-						user: req.body.statementdate.bankuser,
-						pass: req.body.statementdate.bankpass,
-						accid: req.body.statementdate.creditcard,
+						user: req.body.statementdate.username,
+						pass: req.body.statementdate.password,
+						accid: req.body.statementdate.acctnum,
 						acctype: 'CREDITCARD',
 						date_start: formatedatestart, /* Statement start date YYYYMMDDHHMMSS */
 	  					date_end: formatdateend/* Statement end date YYYYMMDDHHMMSS */
