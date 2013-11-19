@@ -101,6 +101,8 @@ $(function(){
 				else {
 				console.log("woohoo!!!")
 				$('.deals').show()
+				$('.budgetEntry').hide()
+				$('.panel-group').hide()
 				$('.listgoals').hide()
 				$('.goalfail').hide()
 
