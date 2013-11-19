@@ -100,6 +100,8 @@ $(function(){
 				console.log('bad!')
 
 				$('.goalfail').show()
+				$('.budgetEntry').hide()
+				$('.panel-group').hide()
 				$('.listgoals').hide()
 				$('.deals').hide()
 			}
